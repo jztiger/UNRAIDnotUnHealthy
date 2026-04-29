@@ -8,6 +8,12 @@ server:
   log_level: warn
 
 common:
+  # Keep all internal traffic on loopback. Without this, Loki's lifecycler
+  # auto-discovers the container's primary IP — which on macvlan is the
+  # external LAN IP (192.168.1.100) — and advertises that in the ring. The
+  # container can't loopback to its own macvlan IP from inside, so any push
+  # routed via the ring fails with "connection refused."
+  instance_addr: 127.0.0.1
   path_prefix: /var/lib/loki
   storage:
     filesystem:
@@ -15,6 +21,7 @@ common:
       rules_directory: /var/lib/loki/rules
   replication_factor: 1
   ring:
+    instance_addr: 127.0.0.1
     kvstore:
       store: inmemory
 
