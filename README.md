@@ -43,8 +43,8 @@ All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 | `/var/run/docker.sock` | `/var/run/docker.sock` (ro) | cadvisor + Alloy — container metadata + log streams |
 | `/var/log`          | `/host/var/log` (ro)     | Alloy — syslog / messages / kern.log  |
 | `/dev`              | `/dev`                   | smartctl_exporter — disk SMART        |
-| `/mnt/cache/appdata/unraidnotunhealthy/prometheus` | `/var/lib/prometheus` | TSDB persistence (cache pool, FUSE bypass) |
-| `/mnt/cache/appdata/unraidnotunhealthy/grafana`    | `/var/lib/grafana`    | Grafana DB persistence (cache pool, FUSE bypass) |
+| `/mnt/user/appdata/unraidnotunhealthy/prometheus` | `/var/lib/prometheus` | TSDB persistence |
+| `/mnt/user/appdata/unraidnotunhealthy/grafana`    | `/var/lib/grafana`    | Grafana DB persistence |
 | `/mnt/user/logs/unraidnotunhealthy`                | `/var/lib/loki`       | Loki log store — under `logs` share for capacity headroom |
 
 Container also needs `--pid=host` and `--cap-add=SYS_RAWIO` (IPMI / SMART).
@@ -89,7 +89,7 @@ Clone the repo to `/mnt/user/appdata/unraidnotunhealthy/` (or anywhere on
 cache), then create `docker-compose.override.yml` from the included example:
 
 ```sh
-mkdir -p /mnt/cache/appdata/unraidnotunhealthy/{prometheus,grafana}
+mkdir -p /mnt/user/appdata/unraidnotunhealthy/{prometheus,grafana}
 mkdir -p /mnt/user/logs/unraidnotunhealthy
 cp docker-compose.override.yml.example docker-compose.override.yml
 # edit the IP — pick something unused on your LAN
@@ -100,23 +100,20 @@ The override does two things:
 
 1. Puts the container on a static LAN IP via macvlan (network defaults to
    `eth0`; confirm yours with `docker network ls`).
-2. Bind-mounts the three persistent volumes:
-   - `prometheus-data` → `/mnt/cache/appdata/unraidnotunhealthy/prometheus/`
-   - `grafana-data` → `/mnt/cache/appdata/unraidnotunhealthy/grafana/`
+2. Bind-mounts the three persistent volumes through `/mnt/user/...` (FUSE
+   shfs):
+   - `prometheus-data` → `/mnt/user/appdata/unraidnotunhealthy/prometheus/`
+   - `grafana-data` → `/mnt/user/appdata/unraidnotunhealthy/grafana/`
    - `loki-data` → `/mnt/user/logs/unraidnotunhealthy/`
 
-   Prometheus and Grafana go directly to the cache pool (`/mnt/cache/...`)
-   to bypass Unraid's FUSE shfs layer — same pattern Plex and Sonarr use
-   for their high-write databases. Loki goes under the `logs` user share
-   where there's array headroom for log retention to grow.
+   Loki lives under the `logs` user share rather than `appdata` to give log
+   retention room to grow without competing with other apps' state.
 
 Notes:
 - The Unraid host itself cannot reach a container on its own macvlan — browse
   to Grafana from another machine on the LAN.
 - All persistent state lives at the three host paths above. Nothing critical
   is stored inside the container.
-- The `/mnt/cache/...` paths are pinned to a cache pool literally named
-  `cache`. If you rename your cache pool, update these paths.
 
 ## Project layout
 

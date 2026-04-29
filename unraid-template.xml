@@ -38,12 +38,12 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
 
   <Data>
     <Volume>
-      <HostDir>/mnt/cache/appdata/unraidnotunhealthy/prometheus</HostDir>
+      <HostDir>/mnt/user/appdata/unraidnotunhealthy/prometheus</HostDir>
       <ContainerDir>/var/lib/prometheus</ContainerDir>
       <Mode>rw</Mode>
     </Volume>
     <Volume>
-      <HostDir>/mnt/cache/appdata/unraidnotunhealthy/grafana</HostDir>
+      <HostDir>/mnt/user/appdata/unraidnotunhealthy/grafana</HostDir>
       <ContainerDir>/var/lib/grafana</ContainerDir>
       <Mode>rw</Mode>
     </Volume>
@@ -116,9 +116,9 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
 
   <Config Name="WebUI Port" Target="3000" Default="3000" Mode="tcp" Description="Grafana port" Type="Port" Display="always" Required="true" Mask="false">3000</Config>
 
-  <Config Name="Prometheus TSDB" Target="/var/lib/prometheus" Default="/mnt/cache/appdata/unraidnotunhealthy/prometheus" Mode="rw" Description="Time-series storage. Persistence is important — losing this loses your history." Type="Path" Display="always" Required="true" Mask="false">/mnt/cache/appdata/unraidnotunhealthy/prometheus</Config>
+  <Config Name="Prometheus TSDB" Target="/var/lib/prometheus" Default="/mnt/user/appdata/unraidnotunhealthy/prometheus" Mode="rw" Description="Time-series storage. Persistence is important — losing this loses your history." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/unraidnotunhealthy/prometheus</Config>
 
-  <Config Name="Grafana Data" Target="/var/lib/grafana" Default="/mnt/cache/appdata/unraidnotunhealthy/grafana" Mode="rw" Description="Grafana DB (users, settings, dashboards added by you)." Type="Path" Display="always" Required="true" Mask="false">/mnt/cache/appdata/unraidnotunhealthy/grafana</Config>
+  <Config Name="Grafana Data" Target="/var/lib/grafana" Default="/mnt/user/appdata/unraidnotunhealthy/grafana" Mode="rw" Description="Grafana DB (users, settings, dashboards added by you)." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/unraidnotunhealthy/grafana</Config>
 
   <Config Name="Host /" Target="/rootfs" Default="/" Mode="ro" Description="Host root for node_exporter filesystem stats." Type="Path" Display="advanced" Required="true" Mask="false">/</Config>
 
