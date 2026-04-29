@@ -1,0 +1,169 @@
+{
+  "title": "Unraid Logs",
+  "uid": "unhealthy-logs",
+  "tags": ["unraid", "unhealthy", "logs"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "job",
+        "type": "query",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "query": "label_values(job)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "selected": false, "text": "All", "value": "$__all" }
+      },
+      {
+        "name": "container",
+        "type": "query",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "query": "label_values({job=\"docker\"}, container)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "selected": false, "text": "All", "value": "$__all" }
+      },
+      {
+        "name": "level",
+        "type": "query",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "query": "label_values(level)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "selected": true, "text": "All", "value": "$__all" }
+      },
+      {
+        "name": "search",
+        "type": "textbox",
+        "label": "Search (regex)",
+        "current": { "selected": false, "text": "", "value": "" }
+      }
+    ]
+  },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Lines (window)",
+      "gridPos": { "x": 0, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum(count_over_time({job=~\"$job\"}[$__range]))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 2, "type": "stat", "title": "Errors (window)",
+      "gridPos": { "x": 5, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum(count_over_time({job=~\"$job\", level=~\"err|error|emerg|alert|crit\"}[$__range]))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 1 },
+          { "color": "red", "value": 50 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "area" }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Containers Logging",
+      "gridPos": { "x": 10, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "count(count by (container) (count_over_time({job=\"docker\"}[$__range])))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value" }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Top Source",
+      "gridPos": { "x": 15, "y": 0, "w": 9, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "topk(1, sum by (container, job) (count_over_time({job=~\"$job\"}[$__range])))",
+        "legendFormat": "{{container}} ({{job}})",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value_and_name" }
+    },
+
+    {
+      "id": 10, "type": "timeseries", "title": "Log Volume by Job",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum by (job) (rate({job=~\"$job\"}[$__interval]))",
+        "legendFormat": "{{job}}",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "logs/sec",
+        "custom": { "drawStyle": "bars", "fillOpacity": 50, "stacking": { "mode": "normal", "group": "A" } } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "Log Volume by Level",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum by (level) (rate({job=~\"$job\", level!=\"\"}[$__interval]))",
+        "legendFormat": "{{level}}",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "logs/sec",
+        "custom": { "drawStyle": "bars", "fillOpacity": 50, "stacking": { "mode": "normal", "group": "A" } } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "err" },     "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "error" },   "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "emerg" },   "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "dark-red" } }] },
+          { "matcher": { "id": "byName", "options": "crit" },    "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "alert" },   "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "warn" },    "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } }] },
+          { "matcher": { "id": "byName", "options": "warning" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } }] },
+          { "matcher": { "id": "byName", "options": "info" },    "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }] },
+          { "matcher": { "id": "byName", "options": "debug" },   "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } }] }
+        ]
+      },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 20, "type": "timeseries", "title": "Top 10 Sources by Volume",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 8 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "topk(10, sum by (container, job) (rate({job=~\"$job\"}[$__interval])))",
+        "legendFormat": "{{container}} ({{job}})",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "logs/sec",
+        "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 30, "type": "logs", "title": "Logs",
+      "gridPos": { "x": 0, "y": 20, "w": 24, "h": 16 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "{job=~\"$job\", container=~\"$container\", level=~\"$level\"} |~ \"$search\"",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      }
+    }
+  ]
+}

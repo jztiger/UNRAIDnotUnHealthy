@@ -1,0 +1,9 @@
+modules:
+  default:
+    collectors:
+      - bmc
+      - ipmi
+      - chassis
+      - dcmi
+    # Local IPMI — no remote credentials needed
+    exclude_sensor_ids: []

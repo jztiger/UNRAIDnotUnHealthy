@@ -1,0 +1,159 @@
+{
+  "title": "Unraid GPU (NVIDIA)",
+  "uid": "unhealthy-gpu",
+  "tags": ["unraid", "unhealthy", "gpu"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "gpu",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+        "query": "label_values(nvidia_smi_utilization_gpu_ratio, uuid)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "selected": false, "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "GPUs",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "count(nvidia_smi_utilization_gpu_ratio) or vector(0)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] }
+    },
+    {
+      "id": 2, "type": "gauge", "title": "GPU Utilization (max)",
+      "gridPos": { "x": 4, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "max(nvidia_smi_utilization_gpu_ratio) * 100", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 75 },
+          { "color": "red", "value": 95 }
+        ] } }, "overrides": [] }
+    },
+    {
+      "id": 3, "type": "gauge", "title": "VRAM Used (max %)",
+      "gridPos": { "x": 9, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "max(nvidia_smi_memory_used_bytes / nvidia_smi_memory_total_bytes) * 100", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 75 },
+          { "color": "red", "value": 90 }
+        ] } }, "overrides": [] }
+    },
+    {
+      "id": 4, "type": "stat", "title": "GPU Temp (max)",
+      "gridPos": { "x": 14, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "max(nvidia_smi_temperature_gpu)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "celsius",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 75 },
+          { "color": "red", "value": 85 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "area" }
+    },
+    {
+      "id": 5, "type": "stat", "title": "Power Draw (sum)",
+      "gridPos": { "x": 19, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "sum(nvidia_smi_power_draw_watts)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "watt" }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+
+    {
+      "id": 10, "type": "timeseries", "title": "GPU Utilization",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "nvidia_smi_utilization_gpu_ratio{uuid=~\"$gpu\"} * 100",
+        "legendFormat": "{{name}} ({{uuid}})",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "custom": { "drawStyle": "line", "fillOpacity": 25 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "VRAM Used",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "nvidia_smi_memory_used_bytes{uuid=~\"$gpu\"}", "legendFormat": "{{name}} used",
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "nvidia_smi_memory_total_bytes{uuid=~\"$gpu\"}", "legendFormat": "{{name}} total",
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes",
+        "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 20, "type": "timeseries", "title": "GPU Temperature",
+      "gridPos": { "x": 0, "y": 13, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "nvidia_smi_temperature_gpu{uuid=~\"$gpu\"}",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "celsius",
+        "custom": { "drawStyle": "line", "fillOpacity": 0 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 21, "type": "timeseries", "title": "Power Draw",
+      "gridPos": { "x": 12, "y": 13, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "nvidia_smi_power_draw_watts{uuid=~\"$gpu\"}",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "watt",
+        "custom": { "drawStyle": "line", "fillOpacity": 25 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 30, "type": "timeseries", "title": "Encoder/Decoder Utilization",
+      "gridPos": { "x": 0, "y": 22, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "nvidia_smi_utilization_encoder_ratio{uuid=~\"$gpu\"} * 100", "legendFormat": "{{name}} encoder",
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "nvidia_smi_utilization_decoder_ratio{uuid=~\"$gpu\"} * 100", "legendFormat": "{{name}} decoder",
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 31, "type": "timeseries", "title": "Fan Speed",
+      "gridPos": { "x": 12, "y": 22, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "nvidia_smi_fan_speed_ratio{uuid=~\"$gpu\"} * 100",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    }
+  ]
+}

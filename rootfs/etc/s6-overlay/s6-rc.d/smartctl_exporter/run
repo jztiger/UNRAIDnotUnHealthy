@@ -1,0 +1,6 @@
+#!/command/with-contenv bash
+# smartctl_exporter needs root to read /dev/sd* SMART data.
+exec /usr/local/bin/smartctl_exporter \
+  --web.listen-address=127.0.0.1:9633 \
+  --smartctl.path=/usr/sbin/smartctl \
+  --smartctl.interval=${SMARTCTL_INTERVAL:-120s}

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Remap the in-image `unhealthy` user/group to match host PUID/PGID, and
+# fix ownership of the persistent volumes. Runs once on container start,
+# before s6 brings up any longrun service.
+#
+# Unraid convention: PUID=99 (nobody), PGID=100 (users).
+# Skip silently if PUID/PGID are unset — defaults stay in place.
+set -e
+
+if [[ -z "${PUID:-}" && -z "${PGID:-}" ]]; then
+  exit 0
+fi
+
+CURRENT_UID="$(id -u unhealthy)"
+CURRENT_GID="$(id -g unhealthy)"
+
+if [[ -n "${PGID:-}" && "${PGID}" != "${CURRENT_GID}" ]]; then
+  groupmod -o -g "${PGID}" unhealthy
+fi
+if [[ -n "${PUID:-}" && "${PUID}" != "${CURRENT_UID}" ]]; then
+  usermod -o -u "${PUID}" -g "$(id -g unhealthy)" unhealthy
+fi
+
+echo "[init-puid] unhealthy is $(id unhealthy)"
+
+# Persistent volumes — these may be host-side directories owned by some
+# other uid. Re-chown to the (possibly remapped) unhealthy user so
+# Prometheus and Grafana can write.
+chown -R unhealthy:unhealthy \
+  /var/lib/prometheus \
+  /var/lib/grafana \
+  /var/lib/loki \
+  /var/log/grafana 2>/dev/null || true

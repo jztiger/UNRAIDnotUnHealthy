@@ -1,0 +1,7 @@
+#!/command/with-contenv bash
+# Alloy reads docker.sock and host log files — runs as root.
+exec /usr/local/bin/alloy run \
+  --server.http.listen-addr=127.0.0.1:12345 \
+  --storage.path=/var/lib/alloy \
+  --disable-reporting \
+  /etc/alloy/config.alloy

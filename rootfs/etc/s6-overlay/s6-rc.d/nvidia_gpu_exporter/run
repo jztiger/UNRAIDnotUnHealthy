@@ -1,0 +1,8 @@
+#!/command/with-contenv bash
+# Skip cleanly on hosts without an NVIDIA GPU runtime.
+if ! command -v nvidia-smi >/dev/null 2>&1; then
+  echo "nvidia_gpu_exporter: nvidia-smi not present — GPU runtime not mounted, sleeping"
+  exec sleep infinity
+fi
+exec s6-setuidgid unhealthy /usr/local/bin/nvidia_gpu_exporter \
+  --web.listen-address=127.0.0.1:9835

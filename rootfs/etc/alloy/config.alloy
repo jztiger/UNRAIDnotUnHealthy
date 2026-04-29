@@ -1,0 +1,72 @@
+// =====================================================================
+// UNRAIDnotUnHealthy — log collector
+// Sources: every running Docker container + host system log files.
+// Sink:    embedded Loki at 127.0.0.1:3100.
+// =====================================================================
+
+// ---- Docker container logs ----
+discovery.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "30s"
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_log_stream"]
+    target_label  = "stream"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    target_label  = "compose_project"
+  }
+}
+
+loki.source.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  targets          = discovery.relabel.containers.output
+  forward_to       = [loki.write.local.receiver]
+  labels           = { job = "docker" }
+  refresh_interval = "30s"
+}
+
+// ---- Host system logs (mounted at /host/var/log read-only) ----
+local.file_match "syslog" {
+  path_targets = [
+    { __path__ = "/host/var/log/syslog",     job = "syslog" },
+    { __path__ = "/host/var/log/syslog.*",   job = "syslog" },
+    { __path__ = "/host/var/log/messages",   job = "syslog" },
+    { __path__ = "/host/var/log/messages.*", job = "syslog" },
+    { __path__ = "/host/var/log/kern.log",   job = "kernel" },
+  ]
+}
+
+loki.source.file "syslog" {
+  targets    = local.file_match.syslog.targets
+  forward_to = [loki.process.syslog.receiver]
+}
+
+loki.process "syslog" {
+  forward_to = [loki.write.local.receiver]
+
+  // Best-effort severity extraction from syslog lines.
+  stage.regex {
+    expression = "(?P<level>(?i)\\b(emerg|alert|crit|err|error|warn|warning|notice|info|debug)\\b)"
+  }
+  stage.labels {
+    values = { level = "" }
+  }
+}
+
+// ---- Sink ----
+loki.write "local" {
+  endpoint {
+    url = "http://127.0.0.1:3100/loki/api/v1/push"
+  }
+}

@@ -1,0 +1,6 @@
+#!/command/with-contenv bash
+exec /usr/local/bin/cadvisor \
+  -listen_ip=127.0.0.1 \
+  -port=8080 \
+  -docker_only=true \
+  -store_container_labels=false

@@ -1,0 +1,123 @@
+{
+  "title": "Unraid IPMI / Hardware",
+  "uid": "unhealthy-ipmi",
+  "tags": ["unraid", "unhealthy", "ipmi"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "IPMI Up",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "ipmi_up", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "mappings": [
+        { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "OK", "color": "green" } } }
+      ], "color": { "mode": "thresholds" },
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "red", "value": null },
+          { "color": "green", "value": 1 }
+        ] } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "none" }
+    },
+    {
+      "id": 2, "type": "stat", "title": "Highest Fan RPM",
+      "gridPos": { "x": 4, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "max(ipmi_fan_speed_rpm)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "rpm" }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Hottest Sensor",
+      "gridPos": { "x": 9, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "max(ipmi_temperature_celsius)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "celsius",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 70 },
+          { "color": "red", "value": 85 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "area" }
+    },
+    {
+      "id": 4, "type": "stat", "title": "DCMI Power",
+      "gridPos": { "x": 14, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "ipmi_dcmi_power_consumption_watts", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "watt" }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 5, "type": "stat", "title": "Chassis Power",
+      "gridPos": { "x": 19, "y": 0, "w": 5, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "ipmi_chassis_power_state", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "mappings": [
+        { "type": "value", "options": { "0": { "text": "OFF", "color": "red" }, "1": { "text": "ON", "color": "green" } } }
+      ], "color": { "mode": "thresholds" },
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "red", "value": null },
+          { "color": "green", "value": 1 }
+        ] } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "none" }
+    },
+
+    {
+      "id": 10, "type": "timeseries", "title": "Temperature Sensors",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 10 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "ipmi_temperature_celsius",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "celsius",
+        "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 20, "type": "timeseries", "title": "Fan RPMs",
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 10 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "ipmi_fan_speed_rpm",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "rpm",
+        "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "min"] } }
+    },
+
+    {
+      "id": 30, "type": "timeseries", "title": "Voltages",
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "ipmi_voltage_volts",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "volt",
+        "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean"] } }
+    },
+    {
+      "id": 31, "type": "timeseries", "title": "Power Draw",
+      "gridPos": { "x": 12, "y": 24, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "ipmi_dcmi_power_consumption_watts",
+        "legendFormat": "DCMI",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "watt",
+        "custom": { "drawStyle": "line", "fillOpacity": 25 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    }
+  ]
+}

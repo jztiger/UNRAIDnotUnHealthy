@@ -1,0 +1,49 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    instance: unraid
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['127.0.0.1:9090']
+
+  - job_name: node
+    static_configs:
+      - targets: ['127.0.0.1:9100']
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ['127.0.0.1:8080']
+    metric_relabel_configs:
+      # Drop the noisy per-mountpoint metrics for cgroup pseudo-fs.
+      - source_labels: [__name__, fstype]
+        regex: 'container_fs_.+;(tmpfs|overlay)'
+        action: drop
+
+  - job_name: smartctl
+    scrape_interval: 60s
+    static_configs:
+      - targets: ['127.0.0.1:9633']
+
+  - job_name: nvidia
+    static_configs:
+      - targets: ['127.0.0.1:9835']
+
+  # ipmi_exporter "module" pattern: probe with module=default
+  - job_name: ipmi
+    scrape_interval: 60s
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['127.0.0.1:9290']
+
+  - job_name: loki
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['127.0.0.1:3100']
+
+  - job_name: alloy
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['127.0.0.1:12345']

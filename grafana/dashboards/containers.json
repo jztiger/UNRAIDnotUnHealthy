@@ -1,0 +1,174 @@
+{
+  "title": "Unraid Containers",
+  "uid": "unhealthy-containers",
+  "tags": ["unraid", "unhealthy", "docker"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "container",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+        "query": "label_values(container_last_seen{name!=\"\"}, name)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "selected": false, "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Containers Running",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "count(count by (name) (container_last_seen{name!=\"\"}))", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value" }
+    },
+    {
+      "id": 2, "type": "stat", "title": "Total Container CPU",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "sum(rate(container_cpu_usage_seconds_total{name!=\"\"}[5m])) * 100", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Total Container RAM",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "sum(container_memory_usage_bytes{name!=\"\"})", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Total Container Net (rx+tx)",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "sum(rate(container_network_receive_bytes_total{name!=\"\"}[5m]) + rate(container_network_transmit_bytes_total{name!=\"\"}[5m])) * 8", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "bps" }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+
+    {
+      "id": 10, "type": "table", "title": "Containers",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 10 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "rate(container_cpu_usage_seconds_total{name!=\"\"}[5m]) * 100", "format": "table", "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "container_memory_usage_bytes{name!=\"\"}", "format": "table", "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "C", "expr": "rate(container_network_receive_bytes_total{name!=\"\"}[5m])", "format": "table", "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "D", "expr": "rate(container_network_transmit_bytes_total{name!=\"\"}[5m])", "format": "table", "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "transformations": [
+        { "id": "joinByField", "options": { "byField": "name", "mode": "outer" } },
+        { "id": "organize", "options": {
+            "excludeByName": { "Time 1": true, "Time 2": true, "Time 3": true, "Time 4": true, "__name__ 1": true, "__name__ 2": true, "__name__ 3": true, "__name__ 4": true, "id 1": true, "id 2": true, "id 3": true, "id 4": true, "image 2": true, "image 3": true, "image 4": true, "instance 1": true, "instance 2": true, "instance 3": true, "instance 4": true, "job 1": true, "job 2": true, "job 3": true, "job 4": true, "interface 3": true, "interface 4": true, "cpu 1": true },
+            "renameByName": { "name": "Container", "image 1": "Image", "Value #A": "CPU %", "Value #B": "RAM", "Value #C": "Net RX", "Value #D": "Net TX" }
+          }
+        }
+      ],
+      "fieldConfig": { "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "CPU %" },
+            "properties": [
+              { "id": "unit", "value": "percent" }, { "id": "decimals", "value": 1 },
+              { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } },
+              { "id": "max", "value": 200 }
+            ]
+          },
+          { "matcher": { "id": "byName", "options": "RAM" },
+            "properties": [{ "id": "unit", "value": "bytes" }]
+          },
+          { "matcher": { "id": "byName", "options": "Net RX" },
+            "properties": [{ "id": "unit", "value": "Bps" }]
+          },
+          { "matcher": { "id": "byName", "options": "Net TX" },
+            "properties": [{ "id": "unit", "value": "Bps" }]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "footer": { "show": false }, "sortBy": [{ "displayName": "CPU %", "desc": true }] }
+    },
+
+    {
+      "id": 20, "type": "timeseries", "title": "CPU per Container",
+      "gridPos": { "x": 0, "y": 14, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "rate(container_cpu_usage_seconds_total{name=~\"$container\"}[5m]) * 100",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "percent", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 21, "type": "timeseries", "title": "RAM per Container",
+      "gridPos": { "x": 12, "y": 14, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "container_memory_usage_bytes{name=~\"$container\"}",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "bytes", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 30, "type": "timeseries", "title": "Network RX per Container",
+      "gridPos": { "x": 0, "y": 23, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "rate(container_network_receive_bytes_total{name=~\"$container\"}[5m])",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 31, "type": "timeseries", "title": "Network TX per Container",
+      "gridPos": { "x": 12, "y": 23, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "rate(container_network_transmit_bytes_total{name=~\"$container\"}[5m])",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 40, "type": "timeseries", "title": "Block I/O Read per Container",
+      "gridPos": { "x": 0, "y": 32, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "rate(container_fs_reads_bytes_total{name=~\"$container\"}[5m])",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 41, "type": "timeseries", "title": "Block I/O Write per Container",
+      "gridPos": { "x": 12, "y": 32, "w": 12, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "rate(container_fs_writes_bytes_total{name=~\"$container\"}[5m])",
+        "legendFormat": "{{name}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+#!/command/with-contenv bash
+exec s6-setuidgid unhealthy /usr/local/bin/loki \
+  -config.file=/etc/loki/loki.yml \
+  -config.expand-env=true

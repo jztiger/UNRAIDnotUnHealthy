@@ -1,0 +1,53 @@
+# Copy to docker-compose.override.yml on the Unraid host and edit values.
+# `docker-compose.override.yml` is gitignored so host-specific tweaks never
+# conflict with `git pull`.
+#
+# What this file does:
+#   1. Puts the container on a static LAN IP via macvlan (eth0 / br0).
+#   2. Re-points the three persistent Docker volumes at bind mounts under
+#      /mnt/user/appdata/unraidnotunhealthy/ so the data lives somewhere
+#      visible — same layout the Community Apps template uses.
+#
+# Macvlan gives the container its own LAN IP. Grafana then answers on
+# http://<that-ip>:3000 directly — the `ports:` mapping in docker-compose.yml
+# becomes a no-op.
+#
+# Confirm the network name with `docker network ls` on Unraid — it's usually
+# `eth0` (custom bridge: macvlan) but some setups call it `br0`.
+#
+# IMPORTANT macvlan caveat: the Unraid host CANNOT reach a container on its
+# own macvlan. Browse to Grafana from another machine on the LAN.
+
+services:
+  unhealthy:
+    networks:
+      unhealthy_net:
+        ipv4_address: 192.168.1.100   # NOTE: stop/remove the existing Grafana-Unraid-Stack container first — it currently holds this IP
+
+networks:
+  unhealthy_net:
+    external: true
+    name: eth0
+
+# Re-define the three persistent volumes as bind mounts to appdata. The
+# `local` driver with `o: bind` keeps `services.unhealthy.volumes` unchanged
+# in the base compose — we only swap the storage backing.
+volumes:
+  prometheus-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/user/appdata/unraidnotunhealthy/prometheus
+  grafana-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/user/appdata/unraidnotunhealthy/grafana
+  loki-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/user/appdata/unraidnotunhealthy/loki

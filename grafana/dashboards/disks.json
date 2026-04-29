@@ -1,0 +1,259 @@
+{
+  "title": "Unraid Disks & SMART",
+  "uid": "unhealthy-disks",
+  "tags": ["unraid", "unhealthy", "smart"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "1m",
+  "time": { "from": "now-24h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "device",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+        "query": "label_values(smartctl_device, device)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "selected": false, "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Disks Monitored",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "count(smartctl_device)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value" }
+    },
+    {
+      "id": 2, "type": "stat", "title": "SMART Failures",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "count(smartctl_device_smart_status == 0) or vector(0)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "red", "value": 1 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "none" }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Disks With Reallocated Sectors",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "count(smartctl_device_attribute{attribute_name=\"Reallocated_Sector_Ct\", attribute_value_type=\"raw\"} > 0) or vector(0)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 1 },
+          { "color": "red", "value": 5 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "none" }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Disks With Pending Sectors",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "count(smartctl_device_attribute{attribute_name=\"Current_Pending_Sector\", attribute_value_type=\"raw\"} > 0) or vector(0)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "red", "value": 1 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "none" }
+    },
+    {
+      "id": 5, "type": "stat", "title": "Hottest Disk (now)",
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "max(smartctl_device_temperature{temperature_type=\"current\"})", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "celsius",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 45 },
+          { "color": "red", "value": 55 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+    {
+      "id": 6, "type": "stat", "title": "Avg Disk Temp",
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "avg(smartctl_device_temperature{temperature_type=\"current\"})", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "celsius", "decimals": 1 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area" }
+    },
+
+    {
+      "id": 10, "type": "table", "title": "Disk Inventory",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A",
+          "expr": "smartctl_device",
+          "legendFormat": "__auto",
+          "format": "table",
+          "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B",
+          "expr": "smartctl_device_smart_status",
+          "legendFormat": "__auto",
+          "format": "table",
+          "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "C",
+          "expr": "smartctl_device_temperature{temperature_type=\"current\"}",
+          "legendFormat": "__auto",
+          "format": "table",
+          "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "D",
+          "expr": "smartctl_device_power_on_seconds / 3600",
+          "legendFormat": "__auto",
+          "format": "table",
+          "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "E",
+          "expr": "smartctl_device_attribute{attribute_name=\"Reallocated_Sector_Ct\", attribute_value_type=\"raw\"}",
+          "legendFormat": "__auto",
+          "format": "table",
+          "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "F",
+          "expr": "smartctl_device_attribute{attribute_name=\"Current_Pending_Sector\", attribute_value_type=\"raw\"}",
+          "legendFormat": "__auto",
+          "format": "table",
+          "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "transformations": [
+        { "id": "joinByField", "options": { "byField": "device", "mode": "outer" } },
+        { "id": "organize", "options": {
+            "excludeByName": { "Time 1": true, "Time 2": true, "Time 3": true, "Time 4": true, "Time 5": true, "Time 6": true, "__name__ 1": true, "__name__ 2": true, "__name__ 3": true, "__name__ 4": true, "__name__ 5": true, "__name__ 6": true, "job 1": true, "job 2": true, "job 3": true, "job 4": true, "job 5": true, "job 6": true, "instance 1": true, "instance 2": true, "instance 3": true, "instance 4": true, "instance 5": true, "instance 6": true, "interface 1": true, "model_family 1": true, "firmware_version 1": true, "ata_additional_product_id 1": true, "ata_version 1": true, "sata_version 1": true, "form_factor 1": true, "rotation_rate 1": true, "in_smartctl_database 1": true, "smart_support_available 1": true, "smart_support_enabled 1": true, "smartctl_version 1": true, "smartctl_build_info 1": true, "attribute_id 1": true, "attribute_id 2": true, "attribute_value_type 1": true, "attribute_value_type 2": true, "attribute_name 1": true, "attribute_name 2": true, "Value #A": true, "temperature_type 1": true },
+            "renameByName": { "device": "Device", "model_name 1": "Model", "serial_number 1": "Serial", "Value #B": "SMART Status", "Value #C": "Temp °C", "Value #D": "Hours", "Value #E": "Reallocated", "Value #F": "Pending" }
+          }
+        }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "align": "auto" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "SMART Status" },
+            "properties": [
+              { "id": "mappings", "value": [{ "type": "value", "options": { "0": { "text": "FAILED", "color": "red", "index": 0 }, "1": { "text": "PASS", "color": "green", "index": 1 } } }] },
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } }
+            ]
+          },
+          { "matcher": { "id": "byName", "options": "Temp °C" },
+            "properties": [
+              { "id": "unit", "value": "celsius" },
+              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 45 },
+                { "color": "red", "value": 55 }
+              ] } },
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } }
+            ]
+          },
+          { "matcher": { "id": "byName", "options": "Hours" },
+            "properties": [{ "id": "unit", "value": "h" }, { "id": "decimals", "value": 0 }]
+          },
+          { "matcher": { "id": "byName", "options": "Reallocated" },
+            "properties": [
+              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 1 },
+                { "color": "red", "value": 5 }
+              ] } },
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } }
+            ]
+          },
+          { "matcher": { "id": "byName", "options": "Pending" },
+            "properties": [
+              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+                { "color": "green", "value": null },
+                { "color": "red", "value": 1 }
+              ] } },
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } }
+            ]
+          }
+        ]
+      },
+      "options": { "showHeader": true, "footer": { "show": false } }
+    },
+
+    {
+      "id": 20, "type": "timeseries", "title": "Disk Temperature",
+      "gridPos": { "x": 0, "y": 13, "w": 24, "h": 9 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "smartctl_device_temperature{temperature_type=\"current\", device=~\"$device\"}",
+        "legendFormat": "{{device}} ({{model_name}})",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "celsius",
+        "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true },
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 45 },
+          { "color": "red", "value": 55 }
+        ] }
+      }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 30, "type": "timeseries", "title": "Reallocated Sectors",
+      "gridPos": { "x": 0, "y": 22, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "smartctl_device_attribute{attribute_name=\"Reallocated_Sector_Ct\", attribute_value_type=\"raw\", device=~\"$device\"}",
+        "legendFormat": "{{device}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short",
+        "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["last"] } }
+    },
+    {
+      "id": 31, "type": "timeseries", "title": "Pending Sectors",
+      "gridPos": { "x": 12, "y": 22, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "smartctl_device_attribute{attribute_name=\"Current_Pending_Sector\", attribute_value_type=\"raw\", device=~\"$device\"}",
+        "legendFormat": "{{device}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short",
+        "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["last"] } }
+    },
+
+    {
+      "id": 40, "type": "timeseries", "title": "Multi-Zone Error Rate (firmware-flagged failures)",
+      "gridPos": { "x": 0, "y": 30, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "description": "Firmware-reported error rate. Some Seagate models flip SMART to FAILED based on this attribute alone, even with zero reallocated sectors — a known leading indicator of impending failure.",
+      "targets": [{ "refId": "A",
+        "expr": "smartctl_device_attribute{attribute_name=\"Multi_Zone_Error_Rate\", attribute_value_type=\"raw\", device=~\"$device\"}",
+        "legendFormat": "{{device}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["last", "max"] } }
+    },
+    {
+      "id": 41, "type": "timeseries", "title": "Power-On Hours",
+      "gridPos": { "x": 12, "y": 30, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A",
+        "expr": "smartctl_device_power_on_seconds{device=~\"$device\"} / 3600",
+        "legendFormat": "{{device}}",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "h", "decimals": 0,
+        "custom": { "drawStyle": "line", "fillOpacity": 0, "spanNulls": true } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["last"] } }
+    }
+  ]
+}

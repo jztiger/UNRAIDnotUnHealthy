@@ -1,0 +1,21 @@
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Local dev artifacts
+data/
+volumes/
+*.log
+
+# Build artifacts
+dist/
+build/
+
+# docker-compose.override.yml is auto-merged with docker-compose.yml by
+# `docker compose` — keep host-specific tweaks (static LAN IP, macvlan name)
+# here so `git pull` never conflicts.
+docker-compose.override.yml
+docker-compose.override.yaml

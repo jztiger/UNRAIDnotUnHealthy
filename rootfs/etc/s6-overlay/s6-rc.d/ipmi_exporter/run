@@ -1,0 +1,9 @@
+#!/command/with-contenv bash
+# Skip cleanly on hosts without IPMI hardware (most consumer boards).
+if [ ! -c /dev/ipmi0 ] && [ ! -c /dev/ipmi/0 ] && [ ! -c /dev/ipmidev/0 ]; then
+  echo "ipmi_exporter: no /dev/ipmi* device — IPMI not available, sleeping"
+  exec sleep infinity
+fi
+exec /usr/local/bin/ipmi_exporter \
+  --config.file=/etc/ipmi_exporter/ipmi_exporter.yml \
+  --web.listen-address=127.0.0.1:9290
