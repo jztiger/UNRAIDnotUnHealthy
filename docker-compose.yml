@@ -12,7 +12,6 @@ services:
     image: unraidnotunhealthy:dev
     container_name: unraidnotunhealthy
     restart: unless-stopped
-    pid: host
     cap_add:
       - SYS_RAWIO   # SMART + IPMI raw access
     ports:

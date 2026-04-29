@@ -13,7 +13,7 @@
   <WebUI>http://[IP]:[PORT:3000]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/jztiger/UNRAIDnotUnHealthy/main/unraid-template.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/jztiger/UNRAIDnotUnHealthy/main/icon.png</Icon>
-  <ExtraParams>--pid=host --cap-add=SYS_RAWIO</ExtraParams>
+  <ExtraParams>--cap-add=SYS_RAWIO</ExtraParams>
   <PostArgs/>
   <CPUset/>
   <DateInstalled/>
