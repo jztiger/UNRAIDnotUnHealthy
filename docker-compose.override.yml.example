@@ -4,9 +4,10 @@
 #
 # What this file does:
 #   1. Puts the container on a static LAN IP via macvlan (eth0 / br0).
-#   2. Re-points the three persistent Docker volumes at bind mounts under
-#      /mnt/user/appdata/unraidnotunhealthy/ so the data lives somewhere
-#      visible — same layout the Community Apps template uses.
+#   2. Re-points the three persistent Docker volumes at bind mounts:
+#      Prometheus TSDB and Grafana DB land in /mnt/cache/appdata/... (FUSE
+#      bypass — faster writes, matches the Plex/Sonarr pattern). Loki goes
+#      under /mnt/user/logs/... where there's room for log retention to grow.
 #
 # Macvlan gives the container its own LAN IP. Grafana then answers on
 # http://<that-ip>:3000 directly — the `ports:` mapping in docker-compose.yml
@@ -38,16 +39,16 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /mnt/user/appdata/unraidnotunhealthy/prometheus
+      device: /mnt/cache/appdata/unraidnotunhealthy/prometheus
   grafana-data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /mnt/user/appdata/unraidnotunhealthy/grafana
+      device: /mnt/cache/appdata/unraidnotunhealthy/grafana
   loki-data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /mnt/user/appdata/unraidnotunhealthy/loki
+      device: /mnt/user/logs/unraidnotunhealthy
