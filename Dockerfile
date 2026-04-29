@@ -138,8 +138,6 @@ RUN tar -C / -Jxpf /tmp/s6-noarch.tar.xz \
 # Binaries
 COPY --from=downloader /dl/prometheus/prometheus           /usr/local/bin/prometheus
 COPY --from=downloader /dl/prometheus/promtool             /usr/local/bin/promtool
-COPY --from=downloader /dl/prometheus/console_libraries    /usr/share/prometheus/console_libraries
-COPY --from=downloader /dl/prometheus/consoles             /usr/share/prometheus/consoles
 COPY --from=downloader /dl/node_exporter/node_exporter     /usr/local/bin/node_exporter
 COPY --from=downloader /dl/smartctl_exporter/smartctl_exporter /usr/local/bin/smartctl_exporter
 COPY --from=downloader /dl/ipmi_exporter/ipmi_exporter     /usr/local/bin/ipmi_exporter

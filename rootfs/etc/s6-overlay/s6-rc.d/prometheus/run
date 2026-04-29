@@ -4,6 +4,4 @@ exec s6-setuidgid unhealthy /usr/local/bin/prometheus \
   --storage.tsdb.path=/var/lib/prometheus \
   --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d} \
   --web.listen-address=127.0.0.1:9090 \
-  --web.console.libraries=/usr/share/prometheus/console_libraries \
-  --web.console.templates=/usr/share/prometheus/consoles \
   --web.enable-lifecycle
