@@ -1,0 +1,14 @@
+#!/command/with-contenv bash
+# Skip cleanly if no API key configured (lets the container run for users
+# who don't have Sonarr or don't want this exporter).
+if [ -z "${SONARR_API_KEY:-}" ]; then
+  echo "exportarr-sonarr: SONARR_API_KEY not set; sleeping (set it to enable)"
+  exec sleep infinity
+fi
+exec s6-setuidgid unhealthy /usr/local/bin/exportarr sonarr \
+  --url "${SONARR_URL:-http://192.168.1.21:8989}" \
+  --api-key "${SONARR_API_KEY}" \
+  --port 9707 \
+  --interface 127.0.0.1 \
+  --enable-additional-metrics \
+  --enable-unknown-queue-items

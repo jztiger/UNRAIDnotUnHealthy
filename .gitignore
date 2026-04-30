@@ -19,3 +19,6 @@ build/
 # here so `git pull` never conflicts.
 docker-compose.override.yml
 docker-compose.override.yaml
+
+# .env holds API keys for the *arr exporters. Never commit it.
+.env

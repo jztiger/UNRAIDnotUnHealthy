@@ -1,0 +1,318 @@
+{
+  "title": "Sonarr & Radarr",
+  "uid": "unhealthy-arr",
+  "tags": ["unraid", "unhealthy", "sonarr", "radarr"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "1m",
+  "time": { "from": "now-24h", "to": "now" },
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "links": [
+    { "title": "Sonarr UI",  "url": "http://192.168.1.21:8989", "type": "link", "icon": "external link", "targetBlank": true },
+    { "title": "Radarr UI",  "url": "http://192.168.1.6:7878",  "type": "link", "icon": "external link", "targetBlank": true }
+  ],
+  "panels": [
+    {
+      "type": "row", "id": 1000, "title": "Sonarr",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 },
+      "collapsed": false, "panels": []
+    },
+    {
+      "id": 10, "type": "stat", "title": "Sonarr Version",
+      "gridPos": { "x": 0, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Sonarr", "url": "http://192.168.1.21:8989/system/status", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "sonarr_system_status", "legendFormat": "{{version}}", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "none",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "red", "value": 0 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "name", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 11, "type": "stat", "title": "Series",
+      "gridPos": { "x": 6, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Sonarr Series", "url": "http://192.168.1.21:8989/", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "sonarr_series_total", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 12, "type": "stat", "title": "Episodes Missing",
+      "gridPos": { "x": 12, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Wanted/Missing", "url": "http://192.168.1.21:8989/wanted/missing", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "sonarr_episode_missing_total", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 50 },
+          { "color": "red", "value": 500 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 13, "type": "stat", "title": "Queue",
+      "gridPos": { "x": 18, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Activity/Queue", "url": "http://192.168.1.21:8989/activity/queue", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "sonarr_queue_total", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 20, "type": "piechart", "title": "Sonarr Library",
+      "gridPos": { "x": 0, "y": 5, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "sonarr_episode_monitored_total - sonarr_episode_missing_total", "legendFormat": "Have", "instant": true, "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "sonarr_episode_missing_total", "legendFormat": "Missing", "instant": true, "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "C", "expr": "sonarr_episode_unmonitored_total", "legendFormat": "Unmonitored", "instant": true, "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short",
+        "color": { "mode": "palette-classic" } }, "overrides": [
+          { "matcher": { "id": "byName", "options": "Have" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "Missing" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "Unmonitored" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } }] }
+        ] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "pieType": "donut" }
+    },
+    {
+      "id": 21, "type": "timeseries", "title": "Sonarr CPU & RAM (cAdvisor)",
+      "gridPos": { "x": 8, "y": 5, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "rate(container_cpu_usage_seconds_total{name=\"sonarr\"}[5m]) * 100", "legendFormat": "CPU %", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "container_memory_usage_bytes{name=\"sonarr\"} / 1024 / 1024", "legendFormat": "RAM MB", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "CPU %" }, "properties": [{ "id": "unit", "value": "percent" }] },
+          { "matcher": { "id": "byName", "options": "RAM MB" }, "properties": [{ "id": "unit", "value": "decmbytes" }, { "id": "custom.axisPlacement", "value": "right" }] }
+        ] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 22, "type": "timeseries", "title": "Sonarr Queue Depth Over Time",
+      "gridPos": { "x": 16, "y": 5, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "sonarr_queue_total", "legendFormat": "queue",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
+        "custom": { "drawStyle": "line", "fillOpacity": 25 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 30, "type": "barchart", "title": "Sonarr Episodes by Quality",
+      "gridPos": { "x": 0, "y": 13, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "sonarr_episode_quality_total", "legendFormat": "{{quality}}", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "palette-classic" } }, "overrides": [] },
+      "options": { "orientation": "horizontal", "showValue": "always", "legend": { "displayMode": "hidden" } }
+    },
+    {
+      "id": 31, "type": "table", "title": "Sonarr Health",
+      "gridPos": { "x": 12, "y": 13, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Sonarr System", "url": "http://192.168.1.21:8989/system/status", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "sonarr_health_issues_total", "format": "table", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "transformations": [
+        { "id": "organize", "options": {
+          "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "wiki_url": true, "source": true },
+          "renameByName": { "type": "Severity", "message": "Issue", "Value": "Count" }
+        } }
+      ],
+      "fieldConfig": { "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Severity" }, "properties": [
+            { "id": "mappings", "value": [{ "type": "value", "options": {
+              "warning": { "color": "yellow", "index": 0 },
+              "error":   { "color": "red",    "index": 1 },
+              "notice":  { "color": "blue",   "index": 2 }
+            } }] },
+            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } }
+          ] }
+        ]
+      },
+      "options": { "showHeader": true, "footer": { "show": false } }
+    },
+
+    {
+      "type": "row", "id": 1001, "title": "Radarr",
+      "gridPos": { "x": 0, "y": 21, "w": 24, "h": 1 },
+      "collapsed": false, "panels": []
+    },
+    {
+      "id": 40, "type": "stat", "title": "Radarr Version",
+      "gridPos": { "x": 0, "y": 22, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Radarr", "url": "http://192.168.1.6:7878/system/status", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "radarr_system_status", "legendFormat": "{{version}}", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "name", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 41, "type": "stat", "title": "Movies",
+      "gridPos": { "x": 6, "y": 22, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Radarr Movies", "url": "http://192.168.1.6:7878/", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "radarr_movie_total", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 42, "type": "stat", "title": "Movies Missing",
+      "gridPos": { "x": 12, "y": 22, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Wanted/Missing", "url": "http://192.168.1.6:7878/wanted/missing", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "radarr_movie_missing_total", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 20 },
+          { "color": "red", "value": 100 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 43, "type": "stat", "title": "Queue",
+      "gridPos": { "x": 18, "y": 22, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Activity/Queue", "url": "http://192.168.1.6:7878/activity/queue", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "radarr_queue_total", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 50, "type": "piechart", "title": "Radarr Library",
+      "gridPos": { "x": 0, "y": 26, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "radarr_movie_downloaded_total",  "legendFormat": "Downloaded", "instant": true, "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "radarr_movie_missing_total",     "legendFormat": "Missing",    "instant": true, "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "C", "expr": "radarr_movie_unmonitored_total", "legendFormat": "Unmonitored","instant": true, "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Downloaded" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "Missing" },    "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "Unmonitored" },"properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } }] }
+        ] },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "pieType": "donut" }
+    },
+    {
+      "id": 51, "type": "timeseries", "title": "Radarr CPU & RAM (cAdvisor)",
+      "gridPos": { "x": 8, "y": 26, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "rate(container_cpu_usage_seconds_total{name=\"radarr\"}[5m]) * 100", "legendFormat": "CPU %", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "container_memory_usage_bytes{name=\"radarr\"} / 1024 / 1024", "legendFormat": "RAM MB", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "CPU %" }, "properties": [{ "id": "unit", "value": "percent" }] },
+          { "matcher": { "id": "byName", "options": "RAM MB" }, "properties": [{ "id": "unit", "value": "decmbytes" }, { "id": "custom.axisPlacement", "value": "right" }] }
+        ] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+    {
+      "id": 52, "type": "timeseries", "title": "Radarr Queue Depth Over Time",
+      "gridPos": { "x": 16, "y": 26, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "radarr_queue_total", "legendFormat": "queue",
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
+        "custom": { "drawStyle": "line", "fillOpacity": 25 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }
+    },
+
+    {
+      "id": 60, "type": "barchart", "title": "Radarr Movies by Quality",
+      "gridPos": { "x": 0, "y": 34, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "radarr_movie_quality_total", "legendFormat": "{{quality}}", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "palette-classic" } }, "overrides": [] },
+      "options": { "orientation": "horizontal", "showValue": "always", "legend": { "displayMode": "hidden" } }
+    },
+    {
+      "id": 61, "type": "table", "title": "Radarr Health",
+      "gridPos": { "x": 12, "y": 34, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "links": [{ "title": "Open Radarr System", "url": "http://192.168.1.6:7878/system/status", "targetBlank": true }],
+      "targets": [{ "refId": "A", "expr": "radarr_health_issues_total", "format": "table", "instant": true,
+        "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "transformations": [
+        { "id": "organize", "options": {
+          "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "wiki_url": true, "source": true },
+          "renameByName": { "type": "Severity", "message": "Issue", "Value": "Count" }
+        } }
+      ],
+      "fieldConfig": { "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Severity" }, "properties": [
+            { "id": "mappings", "value": [{ "type": "value", "options": {
+              "warning": { "color": "yellow", "index": 0 },
+              "error":   { "color": "red",    "index": 1 },
+              "notice":  { "color": "blue",   "index": 2 }
+            } }] },
+            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } }
+          ] }
+        ]
+      },
+      "options": { "showHeader": true, "footer": { "show": false } }
+    },
+
+    {
+      "type": "row", "id": 1002, "title": "Disks",
+      "gridPos": { "x": 0, "y": 42, "w": 24, "h": 1 },
+      "collapsed": false, "panels": []
+    },
+    {
+      "id": 70, "type": "table", "title": "Root Folder Free Space",
+      "gridPos": { "x": 0, "y": 43, "w": 24, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "sonarr_root_folder_freespace_bytes", "legendFormat": "Sonarr {{path}}", "format": "table", "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "radarr_root_folder_freespace_bytes", "legendFormat": "Radarr {{path}}", "format": "table", "instant": true,
+          "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+      ],
+      "transformations": [
+        { "id": "merge", "options": {} },
+        { "id": "organize", "options": {
+            "excludeByName": { "Time": true, "instance": true, "job": true, "__name__": true },
+            "renameByName": { "path": "Path", "Value": "Free", "Value #A": "Free", "Value #B": "Free" }
+          }
+        }
+      ],
+      "fieldConfig": { "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Free" }, "properties": [
+            { "id": "unit", "value": "bytes" },
+            { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }
+          ] }
+        ]
+      },
+      "options": { "showHeader": true, "footer": { "show": false } }
+    }
+  ]
+}

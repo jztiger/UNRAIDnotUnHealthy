@@ -14,6 +14,7 @@ ARG IPMI_EXPORTER_VERSION=1.9.0
 ARG NVIDIA_GPU_EXPORTER_VERSION=1.2.1
 ARG LOKI_VERSION=3.3.0
 ARG ALLOY_VERSION=1.5.0
+ARG EXPORTARR_VERSION=2.2.0
 
 # ---------------------------------------------------------------------------
 # Stage 1: download all upstream artefacts in one cacheable layer
@@ -29,6 +30,7 @@ ARG IPMI_EXPORTER_VERSION
 ARG NVIDIA_GPU_EXPORTER_VERSION
 ARG LOKI_VERSION
 ARG ALLOY_VERSION
+ARG EXPORTARR_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl tar xz-utils unzip \
@@ -82,6 +84,10 @@ RUN curl -fsSL -o alloy.zip "https://github.com/grafana/alloy/releases/download/
  && rm alloy.zip \
  && mv alloy-linux-amd64 alloy \
  && chmod +x alloy
+
+# exportarr (Sonarr/Radarr/etc Prometheus exporter)
+RUN curl -fsSL "https://github.com/onedr0p/exportarr/releases/download/v${EXPORTARR_VERSION}/exportarr_${EXPORTARR_VERSION}_linux_amd64.tar.gz" | tar xz \
+ && chmod +x exportarr
 
 # ---------------------------------------------------------------------------
 # Stage 2: final image
@@ -146,6 +152,7 @@ COPY --from=downloader /dl/nvidia_gpu_exporter/nvidia_gpu_exporter /usr/local/bi
 COPY --from=downloader /dl/cadvisor                        /usr/local/bin/cadvisor
 COPY --from=downloader /dl/loki                             /usr/local/bin/loki
 COPY --from=downloader /dl/alloy                            /usr/local/bin/alloy
+COPY --from=downloader /dl/exportarr                        /usr/local/bin/exportarr
 
 # Grafana
 COPY --from=downloader /dl/grafana                         /usr/share/grafana

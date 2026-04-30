@@ -1,0 +1,14 @@
+#!/command/with-contenv bash
+# Skip cleanly if no API key configured (lets the container run for users
+# who don't have Radarr or don't want this exporter).
+if [ -z "${RADARR_API_KEY:-}" ]; then
+  echo "exportarr-radarr: RADARR_API_KEY not set; sleeping (set it to enable)"
+  exec sleep infinity
+fi
+exec s6-setuidgid unhealthy /usr/local/bin/exportarr radarr \
+  --url "${RADARR_URL:-http://192.168.1.6:7878}" \
+  --api-key "${RADARR_API_KEY}" \
+  --port 9708 \
+  --interface 127.0.0.1 \
+  --enable-additional-metrics \
+  --enable-unknown-queue-items

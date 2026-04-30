@@ -28,6 +28,11 @@ services:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
       LOKI_RETENTION: ${LOKI_RETENTION:-14d}
+      # Sonarr / Radarr exporter — leave keys unset to disable.
+      SONARR_URL: ${SONARR_URL:-http://192.168.1.21:8989}
+      SONARR_API_KEY: ${SONARR_API_KEY:-}
+      RADARR_URL: ${RADARR_URL:-http://192.168.1.6:7878}
+      RADARR_API_KEY: ${RADARR_API_KEY:-}
     volumes:
       - /:/rootfs:ro
       - /proc:/host/proc:ro

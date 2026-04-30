@@ -111,6 +111,26 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
       <Mode/>
     </Variable>
     <Variable>
+      <Value>http://192.168.1.21:8989</Value>
+      <Name>SONARR_URL</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>SONARR_API_KEY</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>http://192.168.1.6:7878</Value>
+      <Name>RADARR_URL</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>RADARR_API_KEY</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
       <Value>99</Value>
       <Name>PUID</Name>
       <Mode/>
@@ -159,4 +179,12 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
   <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="Host user ID for the in-container service user. Unraid convention: 99 (nobody)." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
 
   <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Host group ID for the in-container service user. Unraid convention: 100 (users)." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+
+  <Config Name="Sonarr URL" Target="SONARR_URL" Default="http://192.168.1.21:8989" Mode="" Description="Base URL of your Sonarr instance. Leave SONARR_API_KEY blank below to disable the exporter." Type="Variable" Display="always" Required="false" Mask="false">http://192.168.1.21:8989</Config>
+
+  <Config Name="Sonarr API Key" Target="SONARR_API_KEY" Default="" Mode="" Description="From Sonarr → Settings → General → API Key. Leave blank to disable the Sonarr exporter and dashboard panels." Type="Variable" Display="always" Required="false" Mask="true"/>
+
+  <Config Name="Radarr URL" Target="RADARR_URL" Default="http://192.168.1.6:7878" Mode="" Description="Base URL of your Radarr instance. Leave RADARR_API_KEY blank below to disable the exporter." Type="Variable" Display="always" Required="false" Mask="false">http://192.168.1.6:7878</Config>
+
+  <Config Name="Radarr API Key" Target="RADARR_API_KEY" Default="" Mode="" Description="From Radarr → Settings → General → API Key. Leave blank to disable the Radarr exporter and dashboard panels." Type="Variable" Display="always" Required="false" Mask="true"/>
 </Container>

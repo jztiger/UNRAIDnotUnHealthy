@@ -144,6 +144,7 @@ Notes:
 | **GPU**        | Util %, VRAM used, temp, power draw, encoder/decoder load              |
 | **IPMI**       | Fan RPMs, motherboard temps, voltages, PSU health                      |
 | **Logs**       | Live tail + search across Docker containers and host syslog (Loki)     |
+| **Sonarr & Radarr** | Library size, missing, queue, quality breakdown, health, root-folder space — drill-downs link to the *arr UIs. Requires `SONARR_API_KEY` / `RADARR_API_KEY` env. |
 
 All panels carry history (default 6h, configurable).
 
