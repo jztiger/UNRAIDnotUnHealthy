@@ -14,7 +14,7 @@ ARG IPMI_EXPORTER_VERSION=1.9.0
 ARG NVIDIA_GPU_EXPORTER_VERSION=1.2.1
 ARG LOKI_VERSION=3.3.0
 ARG ALLOY_VERSION=1.5.0
-ARG EXPORTARR_VERSION=2.2.0
+ARG EXPORTARR_VERSION=2.3.0
 
 # ---------------------------------------------------------------------------
 # Stage 1: download all upstream artefacts in one cacheable layer
@@ -85,8 +85,10 @@ RUN curl -fsSL -o alloy.zip "https://github.com/grafana/alloy/releases/download/
  && mv alloy-linux-amd64 alloy \
  && chmod +x alloy
 
-# exportarr (Sonarr/Radarr/etc Prometheus exporter)
-RUN curl -fsSL "https://github.com/onedr0p/exportarr/releases/download/v${EXPORTARR_VERSION}/exportarr_${EXPORTARR_VERSION}_linux_amd64.tar.gz" | tar xz \
+# exportarr (Sonarr/Radarr/etc Prometheus exporter). Tarball nests into
+# exportarr_<v>_linux_amd64/ — strip that to leave the binary at /dl/exportarr.
+RUN curl -fsSL "https://github.com/onedr0p/exportarr/releases/download/v${EXPORTARR_VERSION}/exportarr_${EXPORTARR_VERSION}_linux_amd64.tar.gz" \
+    | tar xz --strip-components=1 \
  && chmod +x exportarr
 
 # ---------------------------------------------------------------------------
