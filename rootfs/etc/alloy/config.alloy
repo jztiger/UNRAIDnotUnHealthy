@@ -31,9 +31,21 @@ discovery.relabel "containers" {
 loki.source.docker "containers" {
   host             = "unix:///var/run/docker.sock"
   targets          = discovery.relabel.containers.output
-  forward_to       = [loki.write.local.receiver]
+  forward_to       = [loki.process.drop_old.receiver]
   labels           = { job = "docker" }
   refresh_interval = "30s"
+}
+
+// Drop log entries whose timestamp is older than ~90 days. Some long-running
+// containers' Docker JSON logs go back to 2022; we don't care about those,
+// and they'd 503 against Loki's schema_config anyway.
+loki.process "drop_old" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.drop {
+    older_than          = "2160h"
+    drop_counter_reason = "older_than_2026"
+  }
 }
 
 // ---- Host system logs (mounted at /host/var/log read-only) ----
@@ -54,6 +66,13 @@ loki.source.file "syslog" {
 
 loki.process "syslog" {
   forward_to = [loki.write.local.receiver]
+
+  // Same age filter as the docker pipeline — don't ingest anything older
+  // than ~90 days (matches Loki's schema/retention window).
+  stage.drop {
+    older_than          = "2160h"
+    drop_counter_reason = "older_than_2026"
+  }
 
   // Best-effort severity extraction from syslog lines.
   stage.regex {
