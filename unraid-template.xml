@@ -5,7 +5,7 @@
   <Registry>https://ghcr.io/jztiger/unraidnotunhealthy</Registry>
   <Network>bridge</Network>
   <Shell>bash</Shell>
-  <Privileged>false</Privileged>
+  <Privileged>true</Privileged>
   <Support>https://github.com/jztiger/UNRAIDnotUnHealthy/issues</Support>
   <Project>https://github.com/jztiger/UNRAIDnotUnHealthy</Project>
   <Overview>All-in-one Prometheus + Grafana monitoring for Unraid. Bundles node_exporter, cAdvisor, smartctl_exporter, NVIDIA GPU exporter, and IPMI exporter in a single container, supervised by s6-overlay. Pre-provisioned dashboards for system, disks/SMART, containers, GPU, and IPMI.</Overview>
@@ -13,7 +13,7 @@
   <WebUI>http://[IP]:[PORT:3000]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/jztiger/UNRAIDnotUnHealthy/main/unraid-template.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/jztiger/UNRAIDnotUnHealthy/main/icon.png</Icon>
-  <ExtraParams>--cap-add=SYS_RAWIO</ExtraParams>
+  <ExtraParams></ExtraParams>
   <PostArgs/>
   <CPUset/>
   <DateInstalled/>

@@ -12,8 +12,11 @@ services:
     image: unraidnotunhealthy:dev
     container_name: unraidnotunhealthy
     restart: unless-stopped
-    cap_add:
-      - SYS_RAWIO   # SMART + IPMI raw access
+    # Required for smartctl_exporter to open every block device for SMART
+    # reads, and for ipmi_exporter to open /dev/ipmi0. cap_add SYS_RAWIO
+    # alone isn't enough on Unraid's kernel — privileged is the standard
+    # pattern for hardware-monitoring containers (scrutiny, etc.).
+    privileged: true
     ports:
       - "3000:3000"
     environment:

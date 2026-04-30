@@ -47,7 +47,8 @@ All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 | `/mnt/user/appdata/unraidnotunhealthy/grafana`    | `/var/lib/grafana`    | Grafana DB persistence |
 | `/mnt/user/logs/unraidnotunhealthy`                | `/var/lib/loki`       | Loki log store — under `logs` share for capacity headroom |
 
-Container also needs `--cap-add=SYS_RAWIO` (IPMI / SMART raw access).
+Container needs `--privileged` (SMART + IPMI raw device access — same
+pattern as scrutiny and other hardware-monitoring containers).
 
 ### Environment variables
 
