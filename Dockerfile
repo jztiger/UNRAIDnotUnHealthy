@@ -172,7 +172,9 @@ RUN useradd --system --no-create-home --shell /usr/sbin/nologin unhealthy \
 # Bake configs, s6 services, and provisioning into the image
 COPY rootfs/                       /
 COPY grafana/provisioning/         /etc/grafana/provisioning/
-COPY grafana/dashboards/           /var/lib/grafana/dashboards/
+# Keep dashboards outside the grafana-data volume path so rebuilds actually
+# update them. The provisioning yml points at /etc/grafana/dashboards.
+COPY grafana/dashboards/           /etc/grafana/dashboards/
 
 # s6 longrun scripts and cont-init scripts must be executable
 RUN find /etc/s6-overlay/s6-rc.d -name run -exec chmod +x {} + \
