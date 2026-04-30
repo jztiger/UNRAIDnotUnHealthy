@@ -55,16 +55,6 @@ compactor:
   retention_delete_worker_count: 150
   delete_request_store: filesystem
 
-ingester:
-  # Allow out-of-order writes within a wide window. When Alloy first
-  # connects to a long-running Docker container, it backfills the entire
-  # log history; new entries arrive concurrently from other containers.
-  # The default max_chunk_age=2h causes Loki to reject anything older than
-  # ~the most-recent entry minus 2h. Bumping to 168h (7d) gives plenty
-  # of slack without piling up in-memory chunks indefinitely.
-  max_chunk_age: 168h
-  chunk_idle_period: 1h
-
 ruler:
   storage:
     type: local

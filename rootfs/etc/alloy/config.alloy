@@ -13,6 +13,17 @@ discovery.docker "containers" {
 discovery.relabel "containers" {
   targets = discovery.docker.containers.targets
 
+  // Don't ingest our own container's logs. The image carries an OCI title
+  // label baked in by the Dockerfile, so this match survives container
+  // renames. Without this, every Loki rejection / Alloy warn line is
+  // re-read by Alloy, pushed to Loki, logged, re-read, ... a 2x noise
+  // amplifier that floods the Logs dashboard with our own chatter.
+  rule {
+    source_labels = ["__meta_docker_container_label_org_opencontainers_image_title"]
+    regex         = "UNRAIDnotUnHealthy"
+    action        = "drop"
+  }
+
   rule {
     source_labels = ["__meta_docker_container_name"]
     regex         = "/(.*)"
