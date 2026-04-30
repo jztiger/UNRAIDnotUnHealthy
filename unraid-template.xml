@@ -63,6 +63,16 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
       <Mode>ro</Mode>
     </Volume>
     <Volume>
+      <HostDir>/sys</HostDir>
+      <ContainerDir>/sys</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/var/lib/docker</HostDir>
+      <ContainerDir>/var/lib/docker</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+    <Volume>
       <HostDir>/var/run/docker.sock</HostDir>
       <ContainerDir>/var/run/docker.sock</ContainerDir>
       <Mode>ro</Mode>
@@ -126,7 +136,11 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
 
   <Config Name="Host /sys" Target="/host/sys" Default="/sys" Mode="ro" Description="Host /sys for hwmon temps, cgroups." Type="Path" Display="advanced" Required="true" Mask="false">/sys</Config>
 
-  <Config Name="Docker Socket" Target="/var/run/docker.sock" Default="/var/run/docker.sock" Mode="ro" Description="Read-only docker.sock for cAdvisor container metadata." Type="Path" Display="advanced" Required="true" Mask="false">/var/run/docker.sock</Config>
+  <Config Name="Host /sys (canonical)" Target="/sys" Default="/sys" Mode="ro" Description="Required by cAdvisor to enumerate per-container cgroups. Distinct from the /host/sys mount used by node_exporter." Type="Path" Display="advanced" Required="true" Mask="false">/sys</Config>
+
+  <Config Name="Docker State Dir" Target="/var/lib/docker" Default="/var/lib/docker" Mode="ro" Description="Read-only access to Docker's state dir so cAdvisor can join cgroup IDs to container names." Type="Path" Display="advanced" Required="true" Mask="false">/var/lib/docker</Config>
+
+  <Config Name="Docker Socket" Target="/var/run/docker.sock" Default="/var/run/docker.sock" Mode="ro" Description="Read-only docker.sock for cAdvisor container metadata + Alloy log streams." Type="Path" Display="advanced" Required="true" Mask="false">/var/run/docker.sock</Config>
 
   <Config Name="Host /dev" Target="/dev" Default="/dev" Mode="rw" Description="Required for SMART (smartctl) and IPMI (/dev/ipmi0) access." Type="Path" Display="advanced" Required="true" Mask="false">/dev</Config>
 

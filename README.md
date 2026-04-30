@@ -40,6 +40,8 @@ All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 | `/`                 | `/rootfs` (ro)           | node_exporter filesystem stats        |
 | `/proc`             | `/host/proc` (ro)        | node_exporter / cadvisor              |
 | `/sys`              | `/host/sys` (ro)         | node_exporter / cadvisor              |
+| `/sys`              | `/sys` (ro)              | cAdvisor — per-container cgroup enumeration |
+| `/var/lib/docker`   | `/var/lib/docker` (ro)   | cAdvisor — container metadata join |
 | `/var/run/docker.sock` | `/var/run/docker.sock` (ro) | cadvisor + Alloy — container metadata + log streams |
 | `/var/log`          | `/host/var/log` (ro)     | Alloy — syslog / messages / kern.log  |
 | `/dev`              | `/dev`                   | smartctl_exporter — disk SMART        |

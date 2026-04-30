@@ -32,6 +32,11 @@ services:
       - /:/rootfs:ro
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
+      # cadvisor needs /sys (cgroups) and /var/lib/docker (container
+      # metadata) at their canonical paths to emit per-container metrics.
+      # Without these it only sees the host root cgroup (id="/").
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/log:/host/var/log:ro
       - /dev:/dev
