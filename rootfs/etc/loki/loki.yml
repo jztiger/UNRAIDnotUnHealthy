@@ -44,6 +44,11 @@ limits_config:
   # containers haven't restarted in months. Anything outside the
   # retention window will be compacted away on its own schedule.
   reject_old_samples: false
+  # Truncate (rather than reject) log lines over the 256KB default.
+  # Some containers (flaresolverr in particular) dump full HTTP response
+  # bodies to stdout — those routinely exceed 300KB. Keeping the first
+  # chunk is more useful than dropping the line entirely.
+  max_line_size_truncate: true
   max_query_series: 5000
   allow_structured_metadata: true
 

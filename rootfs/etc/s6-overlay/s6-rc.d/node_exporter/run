@@ -1,8 +1,12 @@
 #!/command/with-contenv bash
+# --no-collector.mdadm: Unraid's /proc/mdstat is its own format
+# (sbName=...) not the standard md kernel layout, so the upstream
+# parser fatals every scrape. Drop the collector.
 exec s6-setuidgid unhealthy /usr/local/bin/node_exporter \
   --web.listen-address=127.0.0.1:9100 \
   --path.rootfs=/rootfs \
   --path.procfs=/host/proc \
   --path.sysfs=/host/sys \
+  --no-collector.mdadm \
   --collector.filesystem.mount-points-exclude='^/(dev|proc|sys|run|var/lib/docker/.+|rootfs/(dev|proc|sys|run))($|/)' \
   --collector.filesystem.fs-types-exclude='^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$'
