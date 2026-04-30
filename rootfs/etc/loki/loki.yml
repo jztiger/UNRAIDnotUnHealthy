@@ -55,6 +55,16 @@ compactor:
   retention_delete_worker_count: 150
   delete_request_store: filesystem
 
+ingester:
+  # Per-stream out-of-order acceptance window. When Alloy backfills a
+  # long-running container's Docker log on first connection, those entries
+  # may be days or weeks old relative to the stream watermark. Default
+  # max_chunk_age=2h rejects them with "entry too far behind" 400s.
+  # Aligned with Alloy's drop_old=2160h (90d) so anything Alloy forwards
+  # gets accepted; chunks still flush after chunk_idle_period when idle.
+  max_chunk_age: 2160h
+  chunk_idle_period: 1h
+
 ruler:
   storage:
     type: local
