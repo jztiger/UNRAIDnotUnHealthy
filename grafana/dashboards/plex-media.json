@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "description": "Codec / resolution / HDR / audio / subtitle breakdown of the Plex library, sourced from a daily SQLite snapshot at /var/lib/grafana/plex_data/plex_snapshot.db.",
   "editable": true,
   "fiscalYearStartMonth": 0,
@@ -7,7 +9,11 @@
   "liveNow": false,
   "refresh": "",
   "schemaVersion": 39,
-  "tags": ["plex", "media", "library"],
+  "tags": [
+    "plex",
+    "media",
+    "library"
+  ],
   "templating": {
     "list": [
       {
@@ -15,18 +21,34 @@
         "label": "Library",
         "type": "custom",
         "query": "Movies : 2, TV : 3",
-        "current": { "text": "Movies", "value": "2" },
+        "current": {
+          "text": "Movies",
+          "value": "2"
+        },
         "options": [
-          { "text": "Movies", "value": "2", "selected": true },
-          { "text": "TV", "value": "3", "selected": false }
+          {
+            "text": "Movies",
+            "value": "2",
+            "selected": true
+          },
+          {
+            "text": "TV",
+            "value": "3",
+            "selected": false
+          }
         ],
         "includeAll": false,
         "multi": false
       }
     ]
   },
-  "time": { "from": "now-1h", "to": "now" },
-  "timepicker": { "hidden": true },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
   "timezone": "",
   "title": "Plex Media Analysis",
   "uid": "plex-media-analysis",
@@ -37,365 +59,1427 @@
       "id": 1,
       "type": "stat",
       "title": "Movies (files)",
-      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "graphMode": "none", "colorMode": "value", "textMode": "auto", "orientation": "auto" },
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }, "unit": "short" }, "overrides": [] }
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "none",
+        "colorMode": "value",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      }
     },
     {
       "id": 2,
       "type": "stat",
       "title": "TV episodes",
-      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "graphMode": "none", "colorMode": "value", "textMode": "auto", "orientation": "auto" },
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "purple", "value": null }] }, "unit": "short" }, "overrides": [] }
+      "gridPos": {
+        "x": 4,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "none",
+        "colorMode": "value",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      }
     },
     {
       "id": 3,
       "type": "stat",
       "title": "TV series",
-      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT COUNT(*) AS series FROM metadata_items WHERE library_section_id=3 AND metadata_type=2;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "graphMode": "none", "colorMode": "value", "textMode": "auto", "orientation": "auto" },
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "purple", "value": null }] }, "unit": "short" }, "overrides": [] }
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT COUNT(*) AS series FROM metadata_items WHERE library_section_id=3 AND metadata_type=2;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT COUNT(*) AS series FROM metadata_items WHERE library_section_id=3 AND metadata_type=2;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "none",
+        "colorMode": "value",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      }
     },
     {
       "id": 4,
       "type": "stat",
       "title": "Total size",
-      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT SUM(size)/1099511627776.0 AS terabytes FROM media_items WHERE library_section_id IN (2,3) AND deleted_at IS NULL;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "graphMode": "none", "colorMode": "value", "textMode": "auto", "orientation": "auto" },
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }, "unit": "decbytes", "decimals": 1, "custom": { "neutral": 0 } }, "overrides": [{ "matcher": { "id": "byName", "options": "terabytes" }, "properties": [{ "id": "unit", "value": "tbytes" }] }] }
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT SUM(size)/1099511627776.0 AS terabytes FROM media_items WHERE library_section_id IN (2,3) AND deleted_at IS NULL;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT SUM(size)/1099511627776.0 AS terabytes FROM media_items WHERE library_section_id IN (2,3) AND deleted_at IS NULL;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "none",
+        "colorMode": "value",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes",
+          "decimals": 1,
+          "custom": {
+            "neutral": 0
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "terabytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "tbytes"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": 5,
       "type": "stat",
       "title": "% HDR (HDR10 + DV + HLG)",
-      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT 100.0 * SUM(CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' OR vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc IN ('smpte2084','arib-std-b67') THEN 1 ELSE 0 END) / COUNT(*) AS pct FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id IN (2,3) AND mi.deleted_at IS NULL;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "graphMode": "none", "colorMode": "value", "textMode": "auto", "orientation": "auto" },
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }] }, "unit": "percent", "decimals": 1 }, "overrides": [] }
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT 100.0 * SUM(CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' OR vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc IN ('smpte2084','arib-std-b67') THEN 1 ELSE 0 END) / COUNT(*) AS pct FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id IN (2,3) AND mi.deleted_at IS NULL;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT 100.0 * SUM(CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' OR vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc IN ('smpte2084','arib-std-b67') THEN 1 ELSE 0 END) / COUNT(*) AS pct FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id IN (2,3) AND mi.deleted_at IS NULL;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "none",
+        "colorMode": "value",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1
+        },
+        "overrides": []
+      }
     },
     {
       "id": 6,
       "type": "stat",
       "title": "% Atmos audio",
-      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT 100.0 * COUNT(DISTINCT CASE WHEN ms.extra_data LIKE '%Atmos%' THEN mi.id END) / COUNT(DISTINCT mi.id) AS pct FROM media_items mi LEFT JOIN media_streams ms ON ms.media_item_id=mi.id AND ms.stream_type_id=2 WHERE mi.library_section_id IN (2,3) AND mi.deleted_at IS NULL;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "graphMode": "none", "colorMode": "value", "textMode": "auto", "orientation": "auto" },
-      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }] }, "unit": "percent", "decimals": 1 }, "overrides": [] }
+      "gridPos": {
+        "x": 20,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT 100.0 * COUNT(DISTINCT CASE WHEN ms.extra_data LIKE '%Atmos%' THEN mi.id END) / COUNT(DISTINCT mi.id) AS pct FROM media_items mi LEFT JOIN media_streams ms ON ms.media_item_id=mi.id AND ms.stream_type_id=2 WHERE mi.library_section_id IN (2,3) AND mi.deleted_at IS NULL;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT 100.0 * COUNT(DISTINCT CASE WHEN ms.extra_data LIKE '%Atmos%' THEN mi.id END) / COUNT(DISTINCT mi.id) AS pct FROM media_items mi LEFT JOIN media_streams ms ON ms.media_item_id=mi.id AND ms.stream_type_id=2 WHERE mi.library_section_id IN (2,3) AND mi.deleted_at IS NULL;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "none",
+        "colorMode": "value",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1
+        },
+        "overrides": []
+      }
     },
-
     {
       "id": 10,
       "type": "row",
       "title": "Movies",
-      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 1 },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
-
     {
       "id": 11,
       "type": "piechart",
-      "title": "Movies — Video Codec",
-      "gridPos": { "x": 0, "y": 5, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT LOWER(COALESCE(NULLIF(video_codec,''),'unknown')) AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "Movies \u2014 Video Codec",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT LOWER(COALESCE(NULLIF(video_codec,''),'unknown')) AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT LOWER(COALESCE(NULLIF(video_codec,''),'unknown')) AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 12,
       "type": "piechart",
-      "title": "Movies — Resolution",
-      "gridPos": { "x": 6, "y": 5, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY resolution ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "Movies \u2014 Resolution",
+      "gridPos": {
+        "x": 6,
+        "y": 5,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY resolution ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY resolution ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 13,
       "type": "piechart",
-      "title": "Movies — HDR / Dolby Vision",
-      "gridPos": { "x": 12, "y": 5, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, COUNT(*) AS files FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=2 AND mi.deleted_at IS NULL GROUP BY hdr ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "Movies \u2014 HDR / Dolby Vision",
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, COUNT(*) AS files FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=2 AND mi.deleted_at IS NULL GROUP BY hdr ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, COUNT(*) AS files FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=2 AND mi.deleted_at IS NULL GROUP BY hdr ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 14,
       "type": "piechart",
-      "title": "Movies — Container",
-      "gridPos": { "x": 18, "y": 5, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT COALESCE(NULLIF(container,''),'unknown') AS container, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY container ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "Movies \u2014 Container",
+      "gridPos": {
+        "x": 18,
+        "y": 5,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT COALESCE(NULLIF(container,''),'unknown') AS container, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY container ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT COALESCE(NULLIF(container,''),'unknown') AS container, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY container ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
-
     {
       "id": 15,
       "type": "barchart",
-      "title": "Movies — Audio Codec",
-      "gridPos": { "x": 0, "y": 13, "w": 8, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT COALESCE(NULLIF(audio_codec,''),'unknown') AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC LIMIT 12;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "orientation": "horizontal", "xTickLabelRotation": 0, "showValue": "auto", "stacking": "none", "groupWidth": 0.7, "barWidth": 0.97, "barRadius": 0, "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden", "placement": "bottom" } },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 80, "axisPlacement": "auto" } }, "overrides": [] }
+      "title": "Movies \u2014 Audio Codec",
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT COALESCE(NULLIF(audio_codec,''),'unknown') AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC LIMIT 12;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT COALESCE(NULLIF(audio_codec,''),'unknown') AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC LIMIT 12;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.97,
+        "barRadius": 0,
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 80,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 16,
       "type": "barchart",
-      "title": "Movies — Audio Channels",
-      "gridPos": { "x": 8, "y": 13, "w": 8, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT CASE COALESCE(audio_channels,0) WHEN 8 THEN '7.1 (8ch)' WHEN 7 THEN '6.1 (7ch)' WHEN 6 THEN '5.1 (6ch)' WHEN 2 THEN 'Stereo' WHEN 1 THEN 'Mono' WHEN 0 THEN 'unknown' ELSE COALESCE(audio_channels,0) || 'ch' END AS layout, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY layout ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "orientation": "horizontal", "xTickLabelRotation": 0, "showValue": "auto", "stacking": "none", "groupWidth": 0.7, "barWidth": 0.97, "barRadius": 0, "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden", "placement": "bottom" } },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 80, "axisPlacement": "auto" } }, "overrides": [] }
+      "title": "Movies \u2014 Audio Channels",
+      "gridPos": {
+        "x": 8,
+        "y": 13,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT CASE COALESCE(audio_channels,0) WHEN 8 THEN '7.1 (8ch)' WHEN 7 THEN '6.1 (7ch)' WHEN 6 THEN '5.1 (6ch)' WHEN 2 THEN 'Stereo' WHEN 1 THEN 'Mono' WHEN 0 THEN 'unknown' ELSE COALESCE(audio_channels,0) || 'ch' END AS layout, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY layout ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT CASE COALESCE(audio_channels,0) WHEN 8 THEN '7.1 (8ch)' WHEN 7 THEN '6.1 (7ch)' WHEN 6 THEN '5.1 (6ch)' WHEN 2 THEN 'Stereo' WHEN 1 THEN 'Mono' WHEN 0 THEN 'unknown' ELSE COALESCE(audio_channels,0) || 'ch' END AS layout, COUNT(*) AS files FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY layout ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.97,
+        "barRadius": 0,
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 80,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 17,
       "type": "barchart",
-      "title": "Movies — Bitrate Distribution",
-      "gridPos": { "x": 16, "y": 13, "w": 8, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT bucket, files FROM ( SELECT CASE WHEN bitrate IS NULL OR bitrate=0 THEN 'unknown' WHEN bitrate<1000000 THEN '<1 Mbps' WHEN bitrate<3000000 THEN '1-3 Mbps' WHEN bitrate<5000000 THEN '3-5 Mbps' WHEN bitrate<10000000 THEN '5-10 Mbps' WHEN bitrate<25000000 THEN '10-25 Mbps' WHEN bitrate<50000000 THEN '25-50 Mbps' ELSE '50+ Mbps' END AS bucket, COUNT(*) AS files, CASE WHEN bitrate IS NULL OR bitrate=0 THEN 9 WHEN bitrate<1000000 THEN 8 WHEN bitrate<3000000 THEN 7 WHEN bitrate<5000000 THEN 6 WHEN bitrate<10000000 THEN 5 WHEN bitrate<25000000 THEN 4 WHEN bitrate<50000000 THEN 3 ELSE 2 END AS ord FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY bucket, ord ) ORDER BY ord;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "orientation": "horizontal", "xTickLabelRotation": 0, "showValue": "auto", "stacking": "none", "groupWidth": 0.7, "barWidth": 0.97, "barRadius": 0, "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden", "placement": "bottom" } },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 80, "axisPlacement": "auto" } }, "overrides": [{ "matcher": { "id": "byName", "options": "ord" }, "properties": [{ "id": "custom.hideFrom", "value": { "viz": true, "legend": true, "tooltip": true } }] }] }
+      "title": "Movies \u2014 Bitrate Distribution",
+      "gridPos": {
+        "x": 16,
+        "y": 13,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT bucket, files FROM ( SELECT CASE WHEN bitrate IS NULL OR bitrate=0 THEN 'unknown' WHEN bitrate<1000000 THEN '<1 Mbps' WHEN bitrate<3000000 THEN '1-3 Mbps' WHEN bitrate<5000000 THEN '3-5 Mbps' WHEN bitrate<10000000 THEN '5-10 Mbps' WHEN bitrate<25000000 THEN '10-25 Mbps' WHEN bitrate<50000000 THEN '25-50 Mbps' ELSE '50+ Mbps' END AS bucket, COUNT(*) AS files, CASE WHEN bitrate IS NULL OR bitrate=0 THEN 9 WHEN bitrate<1000000 THEN 8 WHEN bitrate<3000000 THEN 7 WHEN bitrate<5000000 THEN 6 WHEN bitrate<10000000 THEN 5 WHEN bitrate<25000000 THEN 4 WHEN bitrate<50000000 THEN 3 ELSE 2 END AS ord FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY bucket, ord ) ORDER BY ord;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT bucket, files FROM ( SELECT CASE WHEN bitrate IS NULL OR bitrate=0 THEN 'unknown' WHEN bitrate<1000000 THEN '<1 Mbps' WHEN bitrate<3000000 THEN '1-3 Mbps' WHEN bitrate<5000000 THEN '3-5 Mbps' WHEN bitrate<10000000 THEN '5-10 Mbps' WHEN bitrate<25000000 THEN '10-25 Mbps' WHEN bitrate<50000000 THEN '25-50 Mbps' ELSE '50+ Mbps' END AS bucket, COUNT(*) AS files, CASE WHEN bitrate IS NULL OR bitrate=0 THEN 9 WHEN bitrate<1000000 THEN 8 WHEN bitrate<3000000 THEN 7 WHEN bitrate<5000000 THEN 6 WHEN bitrate<10000000 THEN 5 WHEN bitrate<25000000 THEN 4 WHEN bitrate<50000000 THEN 3 ELSE 2 END AS ord FROM media_items WHERE library_section_id=2 AND deleted_at IS NULL GROUP BY bucket, ord ) ORDER BY ord;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.97,
+        "barRadius": 0,
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 80,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ord"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "viz": true,
+                  "legend": true,
+                  "tooltip": true
+                }
+              }
+            ]
+          }
+        ]
+      }
     },
-
     {
       "id": 18,
       "type": "table",
-      "title": "Movies — Top 20 highest-bitrate",
-      "gridPos": { "x": 0, "y": 21, "w": 24, "h": 9 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT meta.title || ' (' || COALESCE(meta.year,'?') || ')' AS title, CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' ELSE 'SD' END AS resolution, LOWER(mi.video_codec) AS codec, ROUND(mi.bitrate/1000000.0,1) AS bitrate_mbps, ROUND(mi.size/1073741824.0,1) AS size_gb FROM media_items mi JOIN metadata_items meta ON meta.id=mi.metadata_item_id WHERE mi.library_section_id=2 AND mi.deleted_at IS NULL ORDER BY mi.bitrate DESC LIMIT 20;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "countRows": false, "fields": "" } },
-      "fieldConfig": { "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "filterable": true } }, "overrides": [{ "matcher": { "id": "byName", "options": "bitrate_mbps" }, "properties": [{ "id": "unit", "value": "Mbits" }, { "id": "decimals", "value": 1 }] }, { "matcher": { "id": "byName", "options": "size_gb" }, "properties": [{ "id": "unit", "value": "decgbytes" }, { "id": "decimals", "value": 1 }] }] }
+      "title": "Movies \u2014 Top 20 highest-bitrate",
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 24,
+        "h": 9
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT meta.title || ' (' || COALESCE(meta.year,'?') || ')' AS title, CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' ELSE 'SD' END AS resolution, LOWER(mi.video_codec) AS codec, ROUND(mi.bitrate/1000000.0,1) AS bitrate_mbps, ROUND(mi.size/1073741824.0,1) AS size_gb FROM media_items mi JOIN metadata_items meta ON meta.id=mi.metadata_item_id WHERE mi.library_section_id=2 AND mi.deleted_at IS NULL ORDER BY mi.bitrate DESC LIMIT 20;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT meta.title || ' (' || COALESCE(meta.year,'?') || ')' AS title, CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' ELSE 'SD' END AS resolution, LOWER(mi.video_codec) AS codec, ROUND(mi.bitrate/1000000.0,1) AS bitrate_mbps, ROUND(mi.size/1073741824.0,1) AS size_gb FROM media_items mi JOIN metadata_items meta ON meta.id=mi.metadata_item_id WHERE mi.library_section_id=2 AND mi.deleted_at IS NULL ORDER BY mi.bitrate DESC LIMIT 20;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": ""
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bitrate_mbps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "Mbits"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "size_gb"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decgbytes"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      }
     },
-
     {
       "id": 30,
       "type": "row",
       "title": "TV",
-      "gridPos": { "x": 0, "y": 30, "w": 24, "h": 1 },
+      "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
-
     {
       "id": 31,
       "type": "piechart",
-      "title": "TV — Video Codec",
-      "gridPos": { "x": 0, "y": 31, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT LOWER(COALESCE(NULLIF(video_codec,''),'unknown')) AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "TV \u2014 Video Codec",
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT LOWER(COALESCE(NULLIF(video_codec,''),'unknown')) AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT LOWER(COALESCE(NULLIF(video_codec,''),'unknown')) AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 32,
       "type": "piechart",
-      "title": "TV — Resolution",
-      "gridPos": { "x": 6, "y": 31, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY resolution ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "TV \u2014 Resolution",
+      "gridPos": {
+        "x": 6,
+        "y": 31,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY resolution ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY resolution ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 33,
       "type": "piechart",
-      "title": "TV — HDR / Dolby Vision",
-      "gridPos": { "x": 12, "y": 31, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, COUNT(*) AS files FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=3 AND mi.deleted_at IS NULL GROUP BY hdr ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "TV \u2014 HDR / Dolby Vision",
+      "gridPos": {
+        "x": 12,
+        "y": 31,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, COUNT(*) AS files FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=3 AND mi.deleted_at IS NULL GROUP BY hdr ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, COUNT(*) AS files FROM media_items mi LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=3 AND mi.deleted_at IS NULL GROUP BY hdr ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 34,
       "type": "piechart",
-      "title": "TV — Container",
-      "gridPos": { "x": 18, "y": 31, "w": 6, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT COALESCE(NULLIF(container,''),'unknown') AS container, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY container ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "pieType": "donut", "tooltip": { "mode": "single" }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "displayLabels": ["percent"] },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+      "title": "TV \u2014 Container",
+      "gridPos": {
+        "x": 18,
+        "y": 31,
+        "w": 6,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT COALESCE(NULLIF(container,''),'unknown') AS container, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY container ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT COALESCE(NULLIF(container,''),'unknown') AS container, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY container ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "pieType": "donut",
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "displayLabels": [
+          "percent"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     },
-
     {
       "id": 35,
       "type": "barchart",
-      "title": "TV — Audio Codec",
-      "gridPos": { "x": 0, "y": 39, "w": 8, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT COALESCE(NULLIF(audio_codec,''),'unknown') AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC LIMIT 12;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "orientation": "horizontal", "xTickLabelRotation": 0, "showValue": "auto", "stacking": "none", "groupWidth": 0.7, "barWidth": 0.97, "barRadius": 0, "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden", "placement": "bottom" } },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 80, "axisPlacement": "auto" } }, "overrides": [] }
+      "title": "TV \u2014 Audio Codec",
+      "gridPos": {
+        "x": 0,
+        "y": 39,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT COALESCE(NULLIF(audio_codec,''),'unknown') AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC LIMIT 12;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT COALESCE(NULLIF(audio_codec,''),'unknown') AS codec, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY codec ORDER BY files DESC LIMIT 12;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.97,
+        "barRadius": 0,
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 80,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 36,
       "type": "barchart",
-      "title": "TV — Audio Channels",
-      "gridPos": { "x": 8, "y": 39, "w": 8, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT CASE COALESCE(audio_channels,0) WHEN 8 THEN '7.1 (8ch)' WHEN 6 THEN '5.1 (6ch)' WHEN 2 THEN 'Stereo' WHEN 1 THEN 'Mono' WHEN 0 THEN 'unknown' ELSE COALESCE(audio_channels,0) || 'ch' END AS layout, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY layout ORDER BY files DESC;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "orientation": "horizontal", "xTickLabelRotation": 0, "showValue": "auto", "stacking": "none", "groupWidth": 0.7, "barWidth": 0.97, "barRadius": 0, "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden", "placement": "bottom" } },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 80, "axisPlacement": "auto" } }, "overrides": [] }
+      "title": "TV \u2014 Audio Channels",
+      "gridPos": {
+        "x": 8,
+        "y": 39,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT CASE COALESCE(audio_channels,0) WHEN 8 THEN '7.1 (8ch)' WHEN 6 THEN '5.1 (6ch)' WHEN 2 THEN 'Stereo' WHEN 1 THEN 'Mono' WHEN 0 THEN 'unknown' ELSE COALESCE(audio_channels,0) || 'ch' END AS layout, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY layout ORDER BY files DESC;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT CASE COALESCE(audio_channels,0) WHEN 8 THEN '7.1 (8ch)' WHEN 6 THEN '5.1 (6ch)' WHEN 2 THEN 'Stereo' WHEN 1 THEN 'Mono' WHEN 0 THEN 'unknown' ELSE COALESCE(audio_channels,0) || 'ch' END AS layout, COUNT(*) AS files FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY layout ORDER BY files DESC;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.97,
+        "barRadius": 0,
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 80,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      }
     },
     {
       "id": 37,
       "type": "barchart",
-      "title": "TV — Bitrate Distribution",
-      "gridPos": { "x": 16, "y": 39, "w": 8, "h": 8 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT bucket, files FROM ( SELECT CASE WHEN bitrate IS NULL OR bitrate=0 THEN 'unknown' WHEN bitrate<1000000 THEN '<1 Mbps' WHEN bitrate<3000000 THEN '1-3 Mbps' WHEN bitrate<5000000 THEN '3-5 Mbps' WHEN bitrate<10000000 THEN '5-10 Mbps' WHEN bitrate<25000000 THEN '10-25 Mbps' WHEN bitrate<50000000 THEN '25-50 Mbps' ELSE '50+ Mbps' END AS bucket, COUNT(*) AS files, CASE WHEN bitrate IS NULL OR bitrate=0 THEN 9 WHEN bitrate<1000000 THEN 8 WHEN bitrate<3000000 THEN 7 WHEN bitrate<5000000 THEN 6 WHEN bitrate<10000000 THEN 5 WHEN bitrate<25000000 THEN 4 WHEN bitrate<50000000 THEN 3 ELSE 2 END AS ord FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY bucket, ord ) ORDER BY ord;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "orientation": "horizontal", "xTickLabelRotation": 0, "showValue": "auto", "stacking": "none", "groupWidth": 0.7, "barWidth": 0.97, "barRadius": 0, "tooltip": { "mode": "single" }, "legend": { "displayMode": "hidden", "placement": "bottom" } },
-      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 80, "axisPlacement": "auto" } }, "overrides": [] }
+      "title": "TV \u2014 Bitrate Distribution",
+      "gridPos": {
+        "x": 16,
+        "y": 39,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT bucket, files FROM ( SELECT CASE WHEN bitrate IS NULL OR bitrate=0 THEN 'unknown' WHEN bitrate<1000000 THEN '<1 Mbps' WHEN bitrate<3000000 THEN '1-3 Mbps' WHEN bitrate<5000000 THEN '3-5 Mbps' WHEN bitrate<10000000 THEN '5-10 Mbps' WHEN bitrate<25000000 THEN '10-25 Mbps' WHEN bitrate<50000000 THEN '25-50 Mbps' ELSE '50+ Mbps' END AS bucket, COUNT(*) AS files, CASE WHEN bitrate IS NULL OR bitrate=0 THEN 9 WHEN bitrate<1000000 THEN 8 WHEN bitrate<3000000 THEN 7 WHEN bitrate<5000000 THEN 6 WHEN bitrate<10000000 THEN 5 WHEN bitrate<25000000 THEN 4 WHEN bitrate<50000000 THEN 3 ELSE 2 END AS ord FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY bucket, ord ) ORDER BY ord;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT bucket, files FROM ( SELECT CASE WHEN bitrate IS NULL OR bitrate=0 THEN 'unknown' WHEN bitrate<1000000 THEN '<1 Mbps' WHEN bitrate<3000000 THEN '1-3 Mbps' WHEN bitrate<5000000 THEN '3-5 Mbps' WHEN bitrate<10000000 THEN '5-10 Mbps' WHEN bitrate<25000000 THEN '10-25 Mbps' WHEN bitrate<50000000 THEN '25-50 Mbps' ELSE '50+ Mbps' END AS bucket, COUNT(*) AS files, CASE WHEN bitrate IS NULL OR bitrate=0 THEN 9 WHEN bitrate<1000000 THEN 8 WHEN bitrate<3000000 THEN 7 WHEN bitrate<5000000 THEN 6 WHEN bitrate<10000000 THEN 5 WHEN bitrate<25000000 THEN 4 WHEN bitrate<50000000 THEN 3 ELSE 2 END AS ord FROM media_items WHERE library_section_id=3 AND deleted_at IS NULL GROUP BY bucket, ord ) ORDER BY ord;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xTickLabelRotation": 0,
+        "showValue": "auto",
+        "stacking": "none",
+        "groupWidth": 0.7,
+        "barWidth": 0.97,
+        "barRadius": 0,
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 80,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      }
     },
-
     {
       "id": 50,
       "type": "row",
-      "title": "Drill-down (filter via column headers — variable above selects library)",
-      "gridPos": { "x": 0, "y": 47, "w": 24, "h": 1 },
+      "title": "Drill-down (filter via column headers \u2014 variable above selects library)",
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
-
     {
       "id": 51,
       "type": "table",
-      "title": "All files in selected library — full attributes",
+      "title": "All files in selected library \u2014 full attributes",
       "description": "Use Grafana's column header filters to drill down by codec, resolution, HDR, container, etc. Library selector at top.",
-      "gridPos": { "x": 0, "y": 48, "w": 24, "h": 14 },
-      "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" },
-      "targets": [{
-        "refId": "A",
-        "queryText": "SELECT meta.title AS title, COALESCE(meta.year,0) AS year, mi.container AS container, LOWER(mi.video_codec) AS video_codec, CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, mi.audio_codec AS audio_codec, mi.audio_channels AS audio_channels, ROUND(mi.bitrate/1000000.0,2) AS bitrate_mbps, ROUND(mi.size/1073741824.0,2) AS size_gb, ROUND(mi.duration/60000.0,1) AS duration_min, mi.width AS width, mi.height AS height FROM media_items mi JOIN metadata_items meta ON meta.id=mi.metadata_item_id LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=$library AND mi.deleted_at IS NULL ORDER BY meta.title, meta.year;",
-        "queryType": "table",
-        "datasource": { "type": "frser-sqlite-datasource", "uid": "unhealthy-plex-sqlite" }
-      }],
-      "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": true, "reducer": ["count"], "countRows": true, "fields": "" } },
-      "fieldConfig": { "defaults": { "custom": { "align": "auto", "filterable": true, "cellOptions": { "type": "auto" } } }, "overrides": [{ "matcher": { "id": "byName", "options": "bitrate_mbps" }, "properties": [{ "id": "unit", "value": "Mbits" }] }, { "matcher": { "id": "byName", "options": "size_gb" }, "properties": [{ "id": "unit", "value": "decgbytes" }] }, { "matcher": { "id": "byName", "options": "duration_min" }, "properties": [{ "id": "unit", "value": "m" }] }] }
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 24,
+        "h": 14
+      },
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-plex-sqlite"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryText": "SELECT meta.title AS title, COALESCE(meta.year,0) AS year, mi.container AS container, LOWER(mi.video_codec) AS video_codec, CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, mi.audio_codec AS audio_codec, mi.audio_channels AS audio_channels, ROUND(mi.bitrate/1000000.0,2) AS bitrate_mbps, ROUND(mi.size/1073741824.0,2) AS size_gb, ROUND(mi.duration/60000.0,1) AS duration_min, mi.width AS width, mi.height AS height FROM media_items mi JOIN metadata_items meta ON meta.id=mi.metadata_item_id LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=$library AND mi.deleted_at IS NULL ORDER BY meta.title, meta.year;",
+          "queryType": "table",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-plex-sqlite"
+          },
+          "rawQueryText": "SELECT meta.title AS title, COALESCE(meta.year,0) AS year, mi.container AS container, LOWER(mi.video_codec) AS video_codec, CASE WHEN width>=3000 THEN '4K/UHD' WHEN width>=2400 THEN '1440p' WHEN width>=1700 THEN '1080p' WHEN width>=1100 THEN '720p' WHEN width>0 THEN 'SD' ELSE 'unknown' END AS resolution, CASE WHEN vs.extra_data LIKE '%\"ma:DOVIPresent\":\"1\"%' THEN 'Dolby Vision' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"smpte2084\"%' OR mi.color_trc='smpte2084' THEN 'HDR10' WHEN vs.extra_data LIKE '%\"ma:colorTrc\":\"arib-std-b67\"%' OR mi.color_trc='arib-std-b67' THEN 'HLG' WHEN mi.color_trc='bt2020-10' THEN 'BT.2020' ELSE 'SDR' END AS hdr, mi.audio_codec AS audio_codec, mi.audio_channels AS audio_channels, ROUND(mi.bitrate/1000000.0,2) AS bitrate_mbps, ROUND(mi.size/1073741824.0,2) AS size_gb, ROUND(mi.duration/60000.0,1) AS duration_min, mi.width AS width, mi.height AS height FROM media_items mi JOIN metadata_items meta ON meta.id=mi.metadata_item_id LEFT JOIN media_streams vs ON vs.media_item_id=mi.id AND vs.stream_type_id=1 WHERE mi.library_section_id=$library AND mi.deleted_at IS NULL ORDER BY meta.title, meta.year;",
+          "timeColumns": []
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": true,
+          "reducer": [
+            "count"
+          ],
+          "countRows": true,
+          "fields": ""
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "filterable": true,
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bitrate_mbps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "Mbits"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "size_gb"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decgbytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration_min"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "m"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
