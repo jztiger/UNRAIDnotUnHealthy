@@ -87,6 +87,22 @@ Then `http://localhost:3000`. Build version (commit + count + UTC time) is
 visible via `docker inspect unraidnotunhealthy --format '{{json .Config.Labels}}'`
 or the `BUILD_*` env vars inside the container.
 
+### Push a new image to your Unraid host
+
+After you've done the first manual deploy, subsequent updates can be shipped
+with one command:
+
+```sh
+cp scripts/.deploy.env.example scripts/.deploy.env   # one-time
+$EDITOR scripts/.deploy.env                          # fill in SSH + secrets
+./scripts/deploy-to-unraid.sh                        # build → save → ssh → recreate
+```
+
+The script preserves the container's named volumes (Prometheus/Grafana/Loki
+data survive). Use `--skip-build` to redeploy an already-built local image,
+or `--dry-run` to print the plan without executing. `scripts/.deploy.env`
+is gitignored — never committed.
+
 ## Unraid deployment (macvlan, static LAN IP)
 
 Clone the repo to `/mnt/user/appdata/unraidnotunhealthy/` (or anywhere on

@@ -22,3 +22,6 @@ docker-compose.override.yaml
 
 # .env holds API keys for the *arr exporters. Never commit it.
 .env
+
+# Per-host deploy config + secrets used by scripts/deploy-to-unraid.sh.
+scripts/.deploy.env
