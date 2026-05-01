@@ -45,6 +45,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/log:/host/var/log:ro
       - /dev:/dev
+      # Plex media analysis snapshot, produced by the User Scripts entry
+      # `plex_media_analysis` on the Unraid host. Dashboard panels show
+      # "no data" if the file is absent — perfectly safe to skip on hosts
+      # without Plex.
+      - /mnt/user/plexmedia/dbexport:/var/lib/grafana/plex_data:ro
       - prometheus-data:/var/lib/prometheus
       - grafana-data:/var/lib/grafana
       - loki-data:/var/lib/loki

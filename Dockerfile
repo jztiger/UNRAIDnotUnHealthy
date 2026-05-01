@@ -169,6 +169,15 @@ RUN useradd --system --no-create-home --shell /usr/sbin/nologin unhealthy \
  && ln -sf /usr/share/grafana/bin/grafana /usr/local/bin/grafana \
  && ln -sf /usr/share/grafana/bin/grafana-server /usr/local/bin/grafana-server
 
+# Grafana plugins baked at build time (avoids per-start network fetch).
+# frser-sqlite-datasource powers the Plex media analysis dashboard, which reads
+# /var/lib/grafana/plex_data/plex_snapshot.db (bind-mounted from host, optional).
+RUN /usr/share/grafana/bin/grafana cli \
+      --homepath /usr/share/grafana \
+      --pluginsDir /var/lib/grafana/plugins \
+      plugins install frser-sqlite-datasource \
+ && chown -R unhealthy:unhealthy /var/lib/grafana/plugins
+
 # Bake configs, s6 services, and provisioning into the image
 COPY rootfs/                       /
 COPY grafana/provisioning/         /etc/grafana/provisioning/

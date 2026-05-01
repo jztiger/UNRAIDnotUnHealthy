@@ -48,6 +48,7 @@ All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 | `/mnt/user/appdata/unraidnotunhealthy/prometheus` | `/var/lib/prometheus` | TSDB persistence |
 | `/mnt/user/appdata/unraidnotunhealthy/grafana`    | `/var/lib/grafana`    | Grafana DB persistence |
 | `/mnt/user/logs/unraidnotunhealthy`                | `/var/lib/loki`       | Loki log store — under `logs` share for capacity headroom |
+| `/mnt/user/plexmedia/dbexport` *(optional)* | `/var/lib/grafana/plex_data` (ro) | Plex library snapshot for the **Plex Media Analysis** dashboard. Produced by the User Scripts entry `plex_media_analysis` (daily). Mount can be omitted on hosts without Plex — the dashboard simply shows "no data". |
 
 Container needs `--privileged` (SMART + IPMI raw device access — same
 pattern as scrutiny and other hardware-monitoring containers).
@@ -145,8 +146,9 @@ Notes:
 | **IPMI**       | Fan RPMs, motherboard temps, voltages, PSU health                      |
 | **Logs**       | Live tail + search across Docker containers and host syslog (Loki)     |
 | **Sonarr & Radarr** | Library size, missing, queue, quality breakdown, health, root-folder space — drill-downs link to the *arr UIs. Requires `SONARR_API_KEY` / `RADARR_API_KEY` env. |
+| **Plex Media Analysis** | Codec, resolution, HDR/Dolby Vision, audio codec/channels/Atmos, container, bitrate distribution, top-bitrate movies, drill-down table. Reads a daily SQLite snapshot at `/var/lib/grafana/plex_data/plex_snapshot.db` (mount optional — dashboard quietly shows "no data" without it). |
 
-All panels carry history (default 6h, configurable).
+All panels carry history (default 6h, configurable). The Plex Media Analysis dashboard is point-in-time (refreshes once a day with the snapshot).
 
 ## Versions pinned
 

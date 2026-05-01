@@ -20,3 +20,14 @@ datasources:
     jsonData:
       maxLines: 5000
       timeout: 60
+
+  # Plex library snapshot. Read-only file produced daily by the User Scripts
+  # entry `plex_media_analysis` on the Unraid host. If the file is missing,
+  # the Plex Media Analysis dashboard shows "no data" — harmless.
+  - name: Plex Library
+    uid: unhealthy-plex-sqlite
+    type: frser-sqlite-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      path: /var/lib/grafana/plex_data/plex_snapshot.db
