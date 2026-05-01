@@ -92,6 +92,11 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
       <ContainerDir>/var/lib/loki</ContainerDir>
       <Mode>rw</Mode>
     </Volume>
+    <Volume>
+      <HostDir>/mnt/user/plexmedia/dbexport</HostDir>
+      <ContainerDir>/var/lib/grafana/plex_data</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
   </Data>
 
   <Environment>
