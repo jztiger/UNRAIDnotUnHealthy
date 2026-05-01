@@ -473,8 +473,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
@@ -533,8 +533,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
@@ -593,8 +593,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
@@ -653,8 +653,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
@@ -999,8 +999,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
@@ -1059,8 +1059,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
@@ -1119,8 +1119,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
@@ -1179,8 +1179,8 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^files$/",
+          "values": true
         },
         "pieType": "donut",
         "tooltip": {
