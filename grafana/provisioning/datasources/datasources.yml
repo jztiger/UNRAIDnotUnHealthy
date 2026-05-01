@@ -21,9 +21,14 @@ datasources:
       maxLines: 5000
       timeout: 60
 
-  # Plex library snapshot. Read-only file produced daily by the User Scripts
-  # entry `plex_media_analysis` on the Unraid host. If the file is missing,
+  # Plex library snapshot. Produced daily by the User Scripts entry
+  # `plex_media_analysis` on the Unraid host. If the file is missing,
   # the Plex Media Analysis dashboard shows "no data" — harmless.
+  # The bind mount is :rw because SQLite (via the go-sqlite3 driver this
+  # plugin uses) can't open a DB in pure read-only mode without journal
+  # files alongside it; :ro mount blocks journal creation and the open
+  # fails with SQLITE_CANTOPEN. The plugin only ever runs SELECT, and the
+  # daily snapshot overwrites the file via atomic rename.
   - name: Plex Library
     uid: unhealthy-plex-sqlite
     type: frser-sqlite-datasource

@@ -48,7 +48,7 @@ All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 | `/mnt/user/appdata/unraidnotunhealthy/prometheus` | `/var/lib/prometheus` | TSDB persistence |
 | `/mnt/user/appdata/unraidnotunhealthy/grafana`    | `/var/lib/grafana`    | Grafana DB persistence |
 | `/mnt/user/logs/unraidnotunhealthy`                | `/var/lib/loki`       | Loki log store — under `logs` share for capacity headroom |
-| `/mnt/user/plexmedia/dbexport` *(optional)* | `/var/lib/grafana/plex_data` (ro) | Plex library snapshot for the **Plex Media Analysis** dashboard. Produced by the User Scripts entry `plex_media_analysis` (daily). Mount can be omitted on hosts without Plex — the dashboard simply shows "no data". |
+| `/mnt/user/plexmedia/dbexport` *(optional)* | `/var/lib/grafana/plex_data` (rw) | Plex library snapshot for the **Plex Media Analysis** dashboard. Produced by the User Scripts entry `plex_media_analysis` (daily). Mount can be omitted on hosts without Plex — the dashboard simply shows "no data". `rw` is needed because SQLite refuses to open without journal-file creation rights; the dashboard only issues SELECTs and the daily snapshot overwrites atomically. |
 
 Container needs `--privileged` (SMART + IPMI raw device access — same
 pattern as scrutiny and other hardware-monitoring containers).
