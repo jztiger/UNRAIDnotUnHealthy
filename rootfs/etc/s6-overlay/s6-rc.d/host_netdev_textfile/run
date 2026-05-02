@@ -1,0 +1,18 @@
+#!/command/with-contenv bash
+# Why this exists: /proc/net/dev is network-namespace-local. Inside our
+# macvlan container, reading it (or /host/proc/net/dev — same thing, since
+# /proc/self/net is per-namespace) yields only the container's own eth0,
+# not the Unraid host's NICs. Reading /host/proc/1/net/dev specifically —
+# host PID 1's procfs view — returns the host network namespace, because
+# the kernel resolves /proc/<pid>/net to that pid's netns regardless of
+# which mount of /proc the reader is using.
+#
+# This loop publishes those counters as a Prometheus textfile that our
+# existing node_exporter exposes via --collector.textfile.
+set -eu
+TARGET=/run/node_exporter/textfile/host_netdev.prom
+while true; do
+  awk -f /usr/local/bin/host-netdev-emit.awk /host/proc/1/net/dev \
+    > "${TARGET}.tmp" && mv "${TARGET}.tmp" "${TARGET}"
+  sleep 5
+done

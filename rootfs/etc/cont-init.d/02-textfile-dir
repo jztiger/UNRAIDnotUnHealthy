@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Create the directory node_exporter's textfile collector reads from. The
+# host_netdev_textfile longrun writes Prometheus-format counters here once
+# every 5s; node_exporter exposes them on /metrics alongside its native
+# collectors. Owned by `unhealthy` so the (non-root) writer can drop files.
+set -e
+install -d -o unhealthy -g unhealthy -m 0755 /run/node_exporter/textfile

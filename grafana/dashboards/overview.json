@@ -119,8 +119,8 @@
       "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
       "targets": [
-        { "refId": "A", "expr": "sum(rate(node_network_receive_bytes_total{device!~\"lo|veth.+|docker.+|br-.+\"}[5m])) * 8", "legendFormat": "rx", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
-        { "refId": "B", "expr": "sum(rate(node_network_transmit_bytes_total{device!~\"lo|veth.+|docker.+|br-.+\"}[5m])) * 8", "legendFormat": "tx", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+        { "refId": "A", "expr": "sum(rate(node_network_host_receive_bytes_total{device!~\"lo|veth.+|docker.+|br-.+|br0|virbr.+|tunl.+|shim-.+|bond.+\"}[5m])) * 8", "legendFormat": "rx", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
+        { "refId": "B", "expr": "sum(rate(node_network_host_transmit_bytes_total{device!~\"lo|veth.+|docker.+|br-.+|br0|virbr.+|tunl.+|shim-.+|bond.+\"}[5m])) * 8", "legendFormat": "tx", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
       ],
       "fieldConfig": { "defaults": { "unit": "bps", "custom": { "drawStyle": "line", "fillOpacity": 15 } }, "overrides": [] },
       "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } }

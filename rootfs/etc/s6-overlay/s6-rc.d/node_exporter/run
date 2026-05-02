@@ -8,5 +8,7 @@ exec s6-setuidgid unhealthy /usr/local/bin/node_exporter \
   --path.procfs=/host/proc \
   --path.sysfs=/host/sys \
   --no-collector.mdadm \
+  --collector.textfile \
+  --collector.textfile.directory=/run/node_exporter/textfile \
   --collector.filesystem.mount-points-exclude='^/(dev|proc|sys|run|var/lib/docker/.+|rootfs/(dev|proc|sys|run))($|/)' \
   --collector.filesystem.fs-types-exclude='^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$'
