@@ -38,12 +38,12 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
 
   <Data>
     <Volume>
-      <HostDir>/mnt/user/appdata/unraidnotunhealthy/prometheus</HostDir>
+      <HostDir>/mnt/user/appdb/unraidnotunhealthy/prometheus</HostDir>
       <ContainerDir>/var/lib/prometheus</ContainerDir>
       <Mode>rw</Mode>
     </Volume>
     <Volume>
-      <HostDir>/mnt/user/appdata/unraidnotunhealthy/grafana</HostDir>
+      <HostDir>/mnt/user/appdb/unraidnotunhealthy/grafana</HostDir>
       <ContainerDir>/var/lib/grafana</ContainerDir>
       <Mode>rw</Mode>
     </Volume>
@@ -151,9 +151,9 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
 
   <Config Name="WebUI Port" Target="3000" Default="3000" Mode="tcp" Description="Grafana port" Type="Port" Display="always" Required="true" Mask="false">3000</Config>
 
-  <Config Name="Prometheus TSDB" Target="/var/lib/prometheus" Default="/mnt/user/appdata/unraidnotunhealthy/prometheus" Mode="rw" Description="Time-series storage. Persistence is important — losing this loses your history." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/unraidnotunhealthy/prometheus</Config>
+  <Config Name="Prometheus TSDB" Target="/var/lib/prometheus" Default="/mnt/user/appdb/unraidnotunhealthy/prometheus" Mode="rw" Description="Time-series storage. Path defaults to an array-only share (appdb) since the TSDB grows with retention; pointing it at appdata (cache-only) risks filling the cache pool." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdb/unraidnotunhealthy/prometheus</Config>
 
-  <Config Name="Grafana Data" Target="/var/lib/grafana" Default="/mnt/user/appdata/unraidnotunhealthy/grafana" Mode="rw" Description="Grafana DB (users, settings, dashboards added by you)." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/unraidnotunhealthy/grafana</Config>
+  <Config Name="Grafana Data" Target="/var/lib/grafana" Default="/mnt/user/appdb/unraidnotunhealthy/grafana" Mode="rw" Description="Grafana DB (users, settings, custom dashboards). Defaults to appdb (array-only) so it never pressures the cache pool." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdb/unraidnotunhealthy/grafana</Config>
 
   <Config Name="Host /" Target="/rootfs" Default="/" Mode="ro" Description="Host root for node_exporter filesystem stats." Type="Path" Display="advanced" Required="true" Mask="false">/</Config>
 
@@ -171,7 +171,7 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
 
   <Config Name="Host /var/log" Target="/host/var/log" Default="/var/log" Mode="ro" Description="Read-only mount of host /var/log. Alloy tails syslog/messages/kern.log from here for the Logs dashboard." Type="Path" Display="advanced" Required="true" Mask="false">/var/log</Config>
 
-  <Config Name="Loki TSDB" Target="/var/lib/loki" Default="/mnt/user/logs/unraidnotunhealthy" Mode="rw" Description="Loki storage for ingested logs. Persistence is recommended — losing this loses log history." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/logs/unraidnotunhealthy</Config>
+  <Config Name="Loki TSDB" Target="/var/lib/loki" Default="/mnt/user/logs/unraidnotunhealthy" Mode="rw" Description="Loki log storage. Defaults to /mnt/user/logs (array-backed) — logs grow with retention." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/logs/unraidnotunhealthy</Config>
 
   <Config Name="Timezone" Target="TZ" Default="UTC" Mode="" Description="IANA timezone (e.g. America/Los_Angeles)." Type="Variable" Display="always" Required="false" Mask="false">UTC</Config>
 
