@@ -1,1 +1,1 @@
-/etc/cont-init.d/02-textfile-dir
+/command/with-contenv /etc/cont-init.d/02-textfile-dir
