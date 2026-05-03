@@ -5,6 +5,14 @@
 #
 # Unraid convention: PUID=99 (nobody), PGID=100 (users).
 # Skip silently if PUID/PGID are unset — defaults stay in place.
+#
+# We edit /etc/passwd and /etc/group directly via sed instead of using
+# usermod / groupmod. usermod prints "user is currently used" as a WARNING
+# (exit 0) and refuses to change the uid when any process is using the
+# user — which can happen even at init time on s6-overlay v3 (helper
+# processes spawned by fix-attrs / oneshot-runner). With usermod silently
+# no-op'ing, the remap appears to succeed but the running container keeps
+# uid 999, breaking ownership on bind-mounted host volumes.
 set -e
 
 if [[ -z "${PUID:-}" && -z "${PGID:-}" ]]; then
@@ -15,18 +23,22 @@ CURRENT_UID="$(id -u unhealthy)"
 CURRENT_GID="$(id -g unhealthy)"
 
 if [[ -n "${PGID:-}" && "${PGID}" != "${CURRENT_GID}" ]]; then
-  groupmod -o -g "${PGID}" unhealthy
-fi
-if [[ -n "${PUID:-}" && "${PUID}" != "${CURRENT_UID}" ]]; then
-  usermod -o -u "${PUID}" -g "$(id -g unhealthy)" unhealthy
+  sed -i -E "s|^unhealthy:x:${CURRENT_GID}:|unhealthy:x:${PGID}:|" /etc/group
 fi
 
-echo "[init-puid] unhealthy is $(id unhealthy)"
+# Re-read gid in case we just changed it.
+NEW_GID="$(id -g unhealthy)"
+if [[ -n "${PUID:-}" && "${PUID}" != "${CURRENT_UID}" ]]; then
+  sed -i -E "s|^unhealthy:x:${CURRENT_UID}:[0-9]+:|unhealthy:x:${PUID}:${NEW_GID}:|" /etc/passwd
+fi
+
+echo "[init-puid] unhealthy is now $(id unhealthy)"
 
 # Persistent volumes — these may be host-side directories owned by some
 # other uid. Re-chown to the (possibly remapped) unhealthy user so
 # Prometheus and Grafana can write.
-chown -R unhealthy:unhealthy \
+NEW_UID="$(id -u unhealthy)"
+chown -R "${NEW_UID}:${NEW_GID}" \
   /var/lib/prometheus \
   /var/lib/grafana \
   /var/lib/loki \
