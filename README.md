@@ -89,51 +89,34 @@ or the `BUILD_*` env vars inside the container.
 
 ### Push a new image to your Unraid host
 
-After you've done the first manual deploy, subsequent updates can be shipped
-with one command:
-
 ```sh
-cp scripts/.deploy.env.example scripts/.deploy.env   # one-time
-$EDITOR scripts/.deploy.env                          # fill in SSH + secrets
-./scripts/deploy-to-unraid.sh                        # build → save → ssh → recreate
+bash scripts/deploy-unraid.sh    # push → wait for CI → ssh + update_container → verify
 ```
 
-The script preserves the container's named volumes (Prometheus/Grafana/Loki
-data survive). Use `--skip-build` to redeploy an already-built local image,
-or `--dry-run` to print the plan without executing. `scripts/.deploy.env`
-is gitignored — never committed.
+The script pushes to `main`, waits for the GitHub Actions workflow to build and publish `ghcr.io/jztiger/unraidnotunhealthy:latest`, SSHes to Unraid (`root@192.168.1.133:2222`), and invokes `php /usr/local/emhttp/plugins/dynamix.docker.manager/scripts/update_container UNRAIDnotUnHealthy` — the same code path as clicking **Update** in the Unraid Docker tab. Health check via Grafana's `/api/health`.
 
-## Unraid deployment (macvlan, static LAN IP)
+End-to-end is typically 60-90s once the GHA layer cache is warm; first cold build ~3-5 min.
 
-Clone the repo to `/mnt/user/appdata/unraidnotunhealthy/` (or anywhere on
-cache), then create `docker-compose.override.yml` from the included example:
+## Unraid deployment (native template)
 
-```sh
-mkdir -p /mnt/user/appdata/unraidnotunhealthy/{prometheus,grafana}
-mkdir -p /mnt/user/logs/unraidnotunhealthy
-cp docker-compose.override.yml.example docker-compose.override.yml
-# edit the IP — pick something unused on your LAN
-./scripts/docker-build.sh   # or: docker compose up -d --build
-```
+Production runs under Unraid's native template management. The template at `unraid-template.xml` in this repo is the source of truth — copy it to `/boot/config/plugins/dockerMan/templates-user/my-UNRAIDnotUnHealthy.xml` on the Unraid USB, then in the Docker tab click **Add Container** → User templates → **UNRAIDnotUnHealthy**.
 
-The override does two things:
+Key settings the template ships with:
 
-1. Puts the container on a static LAN IP via macvlan (network defaults to
-   `eth0`; confirm yours with `docker network ls`).
-2. Bind-mounts the three persistent volumes through `/mnt/user/...` (FUSE
-   shfs):
-   - `prometheus-data` → `/mnt/user/appdata/unraidnotunhealthy/prometheus/`
-   - `grafana-data` → `/mnt/user/appdata/unraidnotunhealthy/grafana/`
-   - `loki-data` → `/mnt/user/logs/unraidnotunhealthy/`
+- `<Repository>ghcr.io/jztiger/unraidnotunhealthy:latest</Repository>` — pulled from GHCR, not built on the box
+- Network: `bridge` (Grafana on `<unraid-ip>:3000`)
+- Persistent paths default to:
+  - **Prometheus TSDB** → `/mnt/user/appdb/unraidnotunhealthy/prometheus` (array-only, grows with retention)
+  - **Grafana DB** → `/mnt/user/appdb/unraidnotunhealthy/grafana` (array-only)
+  - **Loki logs** → `/mnt/user/logs/unraidnotunhealthy` (array-only)
 
-   Loki lives under the `logs` user share rather than `appdata` to give log
-   retention room to grow without competing with other apps' state.
+  Putting the growing TSDBs on `appdb` (array share) instead of `appdata` (cache pool) keeps the cache from filling over time. Override any of these in the Edit form if your share layout differs.
 
-Notes:
-- The Unraid host itself cannot reach a container on its own macvlan — browse
-  to Grafana from another machine on the LAN.
-- All persistent state lives at the three host paths above. Nothing critical
-  is stored inside the container.
+- Required host bind mounts (read-only): `/`, `/proc`, `/sys`, `/var/lib/docker`, `/var/run/docker.sock`, `/var/log`. Read-write `/dev` for SMART + IPMI.
+
+Since the image is published to a private GHCR package, Unraid needs `docker login ghcr.io` once with a PAT that has `read:packages` scope. Persist by saving `/root/.docker/config.json` to `/boot/config/docker-auth/` and restoring it via `/boot/config/go` (Unraid's `/root` is tmpfs).
+
+For updates: click **Update** in the Docker tab any time, or run `bash scripts/deploy-unraid.sh` from the dev box.
 
 ## Project layout
 
@@ -141,7 +124,7 @@ Notes:
 .
 ├── Dockerfile               # multi-stage; pulls upstream binaries
 ├── docker-compose.yml       # for local dev
-├── unraid-template.xml      # Community Apps template
+├── unraid-template.xml      # Unraid template (source of truth for production deploy)
 ├── rootfs/                  # baked into image (s6 services + configs)
 │   └── etc/
 │       ├── s6-overlay/...   # one longrun service per exporter
