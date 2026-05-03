@@ -6,13 +6,20 @@
 # Unraid convention: PUID=99 (nobody), PGID=100 (users).
 # Skip silently if PUID/PGID are unset — defaults stay in place.
 #
-# We edit /etc/passwd and /etc/group directly via sed instead of using
-# usermod / groupmod. usermod prints "user is currently used" as a WARNING
-# (exit 0) and refuses to change the uid when any process is using the
-# user — which can happen even at init time on s6-overlay v3 (helper
-# processes spawned by fix-attrs / oneshot-runner). With usermod silently
-# no-op'ing, the remap appears to succeed but the running container keeps
-# uid 999, breaking ownership on bind-mounted host volumes.
+# Implementation notes:
+#
+# 1. We edit /etc/passwd and /etc/group directly via sed instead of using
+#    usermod / groupmod. usermod prints "user is currently used" as a
+#    WARNING (exit 0) and refuses to change the uid when any process is
+#    using the user — which can happen even at init time on s6-overlay v3
+#    (helper processes spawned by fix-attrs / oneshot-runner). With usermod
+#    silently no-op'ing, the remap appears to succeed but the running
+#    container keeps uid 999, breaking ownership on bind-mounted volumes.
+#
+# 2. The /etc/passwd line stores the user's primary gid in field 4. `id -g`
+#    reads from passwd, NOT from /etc/group. So we MUST set both uid and
+#    gid together in the passwd sed — otherwise `id -g` lags the gid
+#    rename in /etc/group, and chown will use a stale group.
 set -e
 
 if [[ -z "${PUID:-}" && -z "${PGID:-}" ]]; then
@@ -22,23 +29,24 @@ fi
 CURRENT_UID="$(id -u unhealthy)"
 CURRENT_GID="$(id -g unhealthy)"
 
-if [[ -n "${PGID:-}" && "${PGID}" != "${CURRENT_GID}" ]]; then
-  sed -i -E "s|^unhealthy:x:${CURRENT_GID}:|unhealthy:x:${PGID}:|" /etc/group
+TARGET_UID="${PUID:-${CURRENT_UID}}"
+TARGET_GID="${PGID:-${CURRENT_GID}}"
+
+# Rename the `unhealthy` GROUP to the target gid (e.g. 999 → 100).
+if [[ "${TARGET_GID}" != "${CURRENT_GID}" ]]; then
+  sed -i -E "s|^unhealthy:x:${CURRENT_GID}:|unhealthy:x:${TARGET_GID}:|" /etc/group
 fi
 
-# Re-read gid in case we just changed it.
-NEW_GID="$(id -g unhealthy)"
-if [[ -n "${PUID:-}" && "${PUID}" != "${CURRENT_UID}" ]]; then
-  sed -i -E "s|^unhealthy:x:${CURRENT_UID}:[0-9]+:|unhealthy:x:${PUID}:${NEW_GID}:|" /etc/passwd
-fi
+# Update the `unhealthy` USER's uid AND primary gid in one pass.
+sed -i -E \
+  "s|^unhealthy:x:${CURRENT_UID}:${CURRENT_GID}:|unhealthy:x:${TARGET_UID}:${TARGET_GID}:|" \
+  /etc/passwd
 
 echo "[init-puid] unhealthy is now $(id unhealthy)"
 
-# Persistent volumes — these may be host-side directories owned by some
-# other uid. Re-chown to the (possibly remapped) unhealthy user so
-# Prometheus and Grafana can write.
-NEW_UID="$(id -u unhealthy)"
-chown -R "${NEW_UID}:${NEW_GID}" \
+# Persistent volumes — chown to the (now remapped) unhealthy uid:gid so
+# Prometheus, Grafana, Loki, etc. can read+write through the bind mount.
+chown -R "${TARGET_UID}:${TARGET_GID}" \
   /var/lib/prometheus \
   /var/lib/grafana \
   /var/lib/loki \
