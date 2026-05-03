@@ -1,0 +1,72 @@
+name: Build & push image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Need full history so BUILD_COMMIT_COUNT (rev-list --count) is correct
+          fetch-depth: 0
+
+      - name: Compute build args from git
+        id: bargs
+        run: |
+          echo "commit=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_OUTPUT"
+          echo "count=$(git rev-list --count HEAD)"   >> "$GITHUB_OUTPUT"
+          echo "time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/unraidnotunhealthy:latest
+            ghcr.io/${{ github.repository_owner }}/unraidnotunhealthy:${{ steps.bargs.outputs.commit }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.title=UNRAIDnotUnHealthy
+            org.opencontainers.image.description=All-in-one Prometheus + Grafana + Loki + exporters for Unraid
+          build-args: |
+            BUILD_COMMIT=${{ steps.bargs.outputs.commit }}
+            BUILD_COMMIT_COUNT=${{ steps.bargs.outputs.count }}
+            BUILD_TIME=${{ steps.bargs.outputs.time }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        run: |
+          {
+            echo "### UNRAIDnotUnHealthy build complete ✓"
+            echo
+            echo "- \`ghcr.io/${{ github.repository_owner }}/unraidnotunhealthy:latest\`"
+            echo "- \`ghcr.io/${{ github.repository_owner }}/unraidnotunhealthy:${{ steps.bargs.outputs.commit }}\`"
+            echo "- BUILD_COMMIT=${{ steps.bargs.outputs.commit }}"
+            echo "- BUILD_COMMIT_COUNT=${{ steps.bargs.outputs.count }}"
+            echo "- BUILD_TIME=${{ steps.bargs.outputs.time }}"
+          } >> "$GITHUB_STEP_SUMMARY"

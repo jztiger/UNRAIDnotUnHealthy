@@ -1,6 +1,15 @@
-# Local dev. On Unraid, use the Community Apps template instead.
+# Local-dev compose only. Production runs under Unraid's native template
+# management (template at /boot/config/plugins/dockerMan/templates-user/
+# my-UNRAIDnotUnHealthy.xml on the Unraid USB), not via this file.
+#
+#   docker compose up -d --build   builds + runs from source (WSL/laptop iteration)
+#   docker compose pull && up -d   pulls the CI image without local build
+#
+# CI builds + publishes ghcr.io/jztiger/unraidnotunhealthy:latest on every
+# push to main via .github/workflows/build.yml.
 services:
   unhealthy:
+    image: ghcr.io/jztiger/unraidnotunhealthy:latest
     build:
       context: .
       args:
@@ -9,7 +18,6 @@ services:
         BUILD_COMMIT: ${BUILD_COMMIT:-unknown}
         BUILD_COMMIT_COUNT: ${BUILD_COMMIT_COUNT:-0}
         BUILD_TIME: ${BUILD_TIME:-unknown}
-    image: unraidnotunhealthy:dev
     container_name: unraidnotunhealthy
     restart: unless-stopped
     # Required for smartctl_exporter to open every block device for SMART
