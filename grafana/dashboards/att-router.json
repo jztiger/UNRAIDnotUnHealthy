@@ -77,7 +77,7 @@
       "gridPos": { "x": 15, "y": 0, "w": 5, "h": 4 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "count(count by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" | pattern `<_> SRC=<src> <_>` |~ \"$search\" [$__range])))",
+        "expr": "count(count by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" | regexp `SRC=(?P<src>\\S+)` |~ \"$search\" [$__range])))",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
       "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
@@ -99,7 +99,7 @@
       "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "sum by (hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | pattern `<_> hook=<hook> <_>` [1m]))",
+        "expr": "sum by (hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `hook=(?P<hook>\\S+)` [1m]))",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" },
         "legendFormat": "{{hook}}" }],
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineWidth": 1, "fillOpacity": 25, "stacking": { "mode": "normal" } }, "unit": "short" }, "overrides": [] },
@@ -111,7 +111,7 @@
       "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "sum by (reason) (count_over_time({host=\"att-router\"} |~ \"$search\" | pattern `<_> reason=<reason> <_>` [1m]))",
+        "expr": "sum by (reason) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `reason=(?P<reason>\\S+)` [1m]))",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" },
         "legendFormat": "{{reason}}" }],
       "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineWidth": 1, "fillOpacity": 25, "stacking": { "mode": "normal" } }, "unit": "short" }, "overrides": [] },
@@ -123,7 +123,7 @@
       "gridPos": { "x": 0, "y": 12, "w": 12, "h": 10 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | pattern `<_> SRC=<src> <_>` [$__range])))",
+        "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | regexp `SRC=(?P<src>\\S+)` [$__range])))",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" },
         "instant": true, "format": "table" }],
       "transformations": [
@@ -151,7 +151,7 @@
       "gridPos": { "x": 12, "y": 12, "w": 12, "h": 10 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"$search\" | pattern `<_> SRC=<src> <_>` [$__range])))",
+        "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"$search\" | regexp `SRC=(?P<src>\\S+)` [$__range])))",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" },
         "instant": true, "format": "table" }],
       "transformations": [
@@ -178,7 +178,7 @@
       "gridPos": { "x": 0, "y": 22, "w": 12, "h": 7 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "topk(20, sum by (reason, hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | pattern `<_> reason=<reason> hook=<hook> <_>` [$__range])))",
+        "expr": "topk(20, sum by (reason, hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `reason=(?P<reason>\\S+)` | regexp `hook=(?P<hook>\\S+)` [$__range])))",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" },
         "instant": true, "format": "table" }],
       "transformations": [
@@ -200,7 +200,7 @@
       "gridPos": { "x": 12, "y": 22, "w": 12, "h": 7 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "topk(20, sum by (dpt) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | pattern `<_> DPT=<dpt> <_>` [$__range])))",
+        "expr": "topk(20, sum by (dpt) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | regexp `DPT=(?P<dpt>\\S+)` [$__range])))",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" },
         "instant": true, "format": "table" }],
       "transformations": [
