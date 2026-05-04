@@ -57,3 +57,92 @@ scrape_configs:
     scrape_interval: 60s
     static_configs:
       - targets: ['127.0.0.1:9708']
+
+  # blackbox_exporter self-metrics (the probe daemon's internals, not the probes)
+  - job_name: blackbox
+    scrape_interval: 60s
+    static_configs:
+      - targets: ['127.0.0.1:9115']
+
+  # ---- Active DNS health probes via blackbox_exporter ----
+  # Multi-target pattern: each scrape sends target=<resolver> + module=<probe>
+  # to blackbox, which runs the probe and returns the result. Resolver IP
+  # becomes the `resolver` label so the dashboard facets by resolver without
+  # each one needing its own scrape config.
+  - job_name: dns_probe_a
+    scrape_interval: 30s
+    metrics_path: /probe
+    params:
+      module: [dns_a_google]
+    static_configs:
+      - targets:
+          - 8.8.8.8        # Google primary
+          - 8.8.4.4        # Google secondary
+          - 1.1.1.1        # Cloudflare primary
+          - 1.0.0.1        # Cloudflare secondary
+          - 9.9.9.9        # Quad9
+          - 192.168.1.254  # AT&T BGW (LAN default resolver)
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+  - job_name: dns_probe_aaaa
+    scrape_interval: 60s
+    metrics_path: /probe
+    params:
+      module: [dns_aaaa_google]
+    static_configs:
+      - targets:
+          - 8.8.8.8
+          - 1.1.1.1
+          - 9.9.9.9
+          - 192.168.1.254
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+  - job_name: dns_probe_alt_domain
+    scrape_interval: 60s
+    metrics_path: /probe
+    params:
+      module: [dns_a_cloudflare]
+    static_configs:
+      - targets:
+          - 8.8.8.8
+          - 1.1.1.1
+          - 9.9.9.9
+          - 192.168.1.254
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+  - job_name: dns_probe_nxdomain
+    scrape_interval: 120s
+    metrics_path: /probe
+    params:
+      module: [dns_nxdomain]
+    static_configs:
+      - targets:
+          - 8.8.8.8
+          - 1.1.1.1
+          - 9.9.9.9
+          - 192.168.1.254
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: resolver
+      - target_label: __address__
+        replacement: 127.0.0.1:9115

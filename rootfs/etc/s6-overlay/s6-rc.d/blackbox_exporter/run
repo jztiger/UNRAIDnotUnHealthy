@@ -1,0 +1,8 @@
+#!/command/with-contenv bash
+# blackbox_exporter — DNS / TCP / ICMP probes for active health checks.
+# Listens on 127.0.0.1:9115. Prometheus scrapes via the multi-target pattern
+# (params: module + target). ICMP probes need raw socket capability — we
+# run as root for that, but the service has no other privileged needs.
+exec /usr/local/bin/blackbox_exporter \
+  --config.file=/etc/blackbox_exporter/blackbox.yml \
+  --web.listen-address=127.0.0.1:9115

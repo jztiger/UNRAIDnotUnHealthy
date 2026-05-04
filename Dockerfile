@@ -15,6 +15,7 @@ ARG NVIDIA_GPU_EXPORTER_VERSION=1.2.1
 ARG LOKI_VERSION=3.3.0
 ARG ALLOY_VERSION=1.5.0
 ARG EXPORTARR_VERSION=2.3.0
+ARG BLACKBOX_EXPORTER_VERSION=0.26.0
 
 # ---------------------------------------------------------------------------
 # Stage 1: download all upstream artefacts in one cacheable layer
@@ -31,6 +32,7 @@ ARG NVIDIA_GPU_EXPORTER_VERSION
 ARG LOKI_VERSION
 ARG ALLOY_VERSION
 ARG EXPORTARR_VERSION
+ARG BLACKBOX_EXPORTER_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl tar xz-utils unzip \
@@ -90,6 +92,10 @@ RUN curl -fsSL -o alloy.zip "https://github.com/grafana/alloy/releases/download/
 RUN curl -fsSL "https://github.com/onedr0p/exportarr/releases/download/v${EXPORTARR_VERSION}/exportarr_${EXPORTARR_VERSION}_linux_amd64.tar.gz" \
     | tar xz --strip-components=1 \
  && chmod +x exportarr
+
+# blackbox_exporter (DNS / TCP / HTTP probes — used here for active DNS health checks)
+RUN curl -fsSL "https://github.com/prometheus/blackbox_exporter/releases/download/v${BLACKBOX_EXPORTER_VERSION}/blackbox_exporter-${BLACKBOX_EXPORTER_VERSION}.linux-amd64.tar.gz" | tar xz \
+ && mv "blackbox_exporter-${BLACKBOX_EXPORTER_VERSION}.linux-amd64" blackbox_exporter
 
 # ---------------------------------------------------------------------------
 # Stage 2: final image
@@ -156,6 +162,7 @@ COPY --from=downloader /dl/cadvisor                        /usr/local/bin/cadvis
 COPY --from=downloader /dl/loki                             /usr/local/bin/loki
 COPY --from=downloader /dl/alloy                            /usr/local/bin/alloy
 COPY --from=downloader /dl/exportarr                        /usr/local/bin/exportarr
+COPY --from=downloader /dl/blackbox_exporter/blackbox_exporter /usr/local/bin/blackbox_exporter
 
 # Grafana
 COPY --from=downloader /dl/grafana                         /usr/share/grafana
@@ -164,7 +171,7 @@ RUN useradd --system --no-create-home --shell /usr/sbin/nologin unhealthy \
  && mkdir -p /var/lib/prometheus /var/lib/grafana /var/log/grafana \
              /var/lib/loki /var/lib/alloy \
              /etc/grafana /etc/prometheus /etc/ipmi_exporter /etc/smartctl_exporter \
-             /etc/loki /etc/alloy \
+             /etc/loki /etc/alloy /etc/blackbox_exporter \
  && chown -R unhealthy:unhealthy /var/lib/prometheus /var/lib/grafana /var/log/grafana \
                                   /var/lib/loki /var/lib/alloy \
  && ln -sf /usr/share/grafana/bin/grafana /usr/local/bin/grafana \

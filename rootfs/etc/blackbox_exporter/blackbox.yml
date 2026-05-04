@@ -1,0 +1,69 @@
+# blackbox_exporter modules — DNS health probing primarily, plus a couple
+# of generic TCP/ICMP options for future use.
+#
+# Each module defines HOW to probe; the actual list of resolvers/hosts
+# comes from prometheus.yml's static_configs and is composed via the
+# multi-target pattern (target=<resolver_ip>, params.module=<module>).
+modules:
+  # A-record lookup. Validates that the answer section is non-empty —
+  # catches resolvers that return SERVFAIL or REFUSED with apparent success.
+  dns_a_google:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "google.com"
+      query_type: A
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - ".+"
+
+  # AAAA lookup — sometimes IPv4 resolves but IPv6 doesn't (or vice versa).
+  # Useful for catching dual-stack misconfigurations.
+  dns_aaaa_google:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "google.com"
+      query_type: AAAA
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - ".+"
+
+  # Different domain to rule out a per-domain block. If google.com resolves
+  # but cloudflare.com doesn't on the same resolver, that's diagnostic.
+  dns_a_cloudflare:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "cloudflare.com"
+      query_type: A
+      validate_answer_rrs:
+        fail_if_not_matches_regexp:
+          - ".+"
+
+  # NXDOMAIN check — verify the resolver correctly says "doesn't exist"
+  # rather than returning a synthesized response (some captive portals do).
+  dns_nxdomain:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "this-domain-definitely-does-not-exist-xyz123.invalid"
+      query_type: A
+      valid_rcodes:
+        - NXDOMAIN
+
+  # TCP/853 probe (DNS-over-TLS). No actual TLS handshake — just confirms
+  # the port is reachable. Useful to detect when BGW blocks DoT outbound.
+  dot_tcp_check:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      tls: false
+
+  # ICMP ping for completeness — useful if you want to layer in basic
+  # reachability for the same resolvers without redoing static_configs.
+  icmp_v4:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: ip4
