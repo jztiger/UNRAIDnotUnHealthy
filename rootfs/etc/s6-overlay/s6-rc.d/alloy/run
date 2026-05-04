@@ -1,13 +1,7 @@
 #!/command/with-contenv bash
 # Alloy reads docker.sock and host log files — runs as root.
-#
-# --stability.level=experimental enables loki.source.syslog's "raw" format,
-# which we need for the BGW320 router whose log output has no RFC3164
-# <priority> framing. The flag only ENABLES experimental components; it
-# doesn't change behavior of stable ones, so it's safe to leave set.
 exec /usr/local/bin/alloy run \
   --server.http.listen-addr=127.0.0.1:12345 \
   --storage.path=/var/lib/alloy \
   --disable-reporting \
-  --stability.level=experimental \
   /etc/alloy/config.alloy
