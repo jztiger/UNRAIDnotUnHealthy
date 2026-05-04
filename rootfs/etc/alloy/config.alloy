@@ -94,6 +94,24 @@ loki.process "syslog" {
   }
 }
 
+// ---- AT&T BGW320 router syslog (network-received) ----
+// The router is configured (Diagnostics → Syslog) to forward at Notice level
+// to this container's macvlan IP on UDP/1514. Alloy's RFC3164 parser
+// auto-extracts severity / facility / hostname / app_name / proc_id as
+// labels, so Grafana queries can filter on them directly without regex
+// stages. Forwarded straight to the local sink — the existing
+// loki.process.syslog regex pipeline is for file-based syslog where
+// severity is just text in the message; protocol-syslog already carries it.
+loki.source.syslog "att_router" {
+  listener {
+    address       = "0.0.0.0:1514"
+    protocol      = "udp"
+    syslog_format = "rfc3164"
+    labels        = { job = "syslog_remote", host = "att-router" }
+  }
+  forward_to = [loki.write.local.receiver]
+}
+
 // ---- Sink ----
 loki.write "local" {
   endpoint {
