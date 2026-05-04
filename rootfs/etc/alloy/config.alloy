@@ -94,55 +94,6 @@ loki.process "syslog" {
   }
 }
 
-// ---- AT&T BGW320 router log forwarder (raw UDP, NOT RFC-formatted syslog) ----
-// The BGW320 emits raw text log lines (typically "PolicyName: ..." style)
-// over UDP without the RFC3164/5424 <priority> prefix, so Alloy's
-// loki.source.syslog parser drops them with "invalid or unsupported framing.
-// first byte: 'P'". Verified empirically 2026-05-03 by tailing alloy logs
-// while the router was actively forwarding.
-//
-// Workaround: use OpenTelemetry's udplog receiver, which accepts each UDP
-// datagram as one plain log line with no framing requirements. We then
-// inject host/job attributes, promote them to Loki labels via the
-// loki.attribute.labels convention, and ship through otelcol.exporter.loki
-// into the same loki.write.local sink as the rest of the pipeline.
-otelcol.receiver.udplog "att_router" {
-  listen_address = "0.0.0.0:1514"
-  output {
-    logs = [otelcol.processor.attributes.att_router.input]
-  }
-}
-
-otelcol.processor.attributes "att_router" {
-  // Tag every record so Grafana queries like {host="att-router"} work the
-  // same way they did under the original syslog plan.
-  action {
-    key    = "host"
-    value  = "att-router"
-    action = "insert"
-  }
-  action {
-    key    = "job"
-    value  = "syslog_remote"
-    action = "insert"
-  }
-  // Magic key — otelcol.exporter.loki reads this and promotes the listed
-  // attributes to Loki stream labels (rather than leaving them as
-  // structured metadata buried inside each log line).
-  action {
-    key    = "loki.attribute.labels"
-    value  = "host,job"
-    action = "insert"
-  }
-  output {
-    logs = [otelcol.exporter.loki.att_router.input]
-  }
-}
-
-otelcol.exporter.loki "att_router" {
-  forward_to = [loki.write.local.receiver]
-}
-
 // ---- Sink ----
 loki.write "local" {
   endpoint {
