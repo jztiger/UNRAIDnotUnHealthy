@@ -1,0 +1,202 @@
+{
+  "title": "DNS Troubleshooting (BGW drops)",
+  "uid": "unhealthy-dns",
+  "tags": ["unraid", "unhealthy", "network", "dns"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "lan_filter",
+        "type": "textbox",
+        "label": "LAN IP filter (regex, blank=all)",
+        "current": { "selected": false, "text": "", "value": "" }
+      }
+    ]
+  },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 100, "type": "text", "title": "",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 3 },
+      "options": {
+        "mode": "markdown",
+        "content": "**This dashboard shows DNS traffic the BGW320 _blocked_** (UDP/53, TCP/53, DoT/853). The router doesn't log successful queries — empty panels mean DNS is flowing fine. **Non-empty LAN-side panels are the smoking gun**: a device tried to do DNS, the firewall said no, and that's why something on your LAN can't resolve. WAN-side drops to port 53 are usually internet scanners trying to find open resolvers and are normal background noise."
+      }
+    },
+    {
+      "id": 1, "type": "stat", "title": "DNS packets blocked (window)",
+      "gridPos": { "x": 0, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum(count_over_time({host=\"att-router\"} |~ \"DPT=53|DPT=853\" [$__range]))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 2, "type": "stat", "title": "LAN→WAN DNS blocked",
+      "description": "Your devices trying to do DNS and being blocked. ANY non-zero number here is worth investigating — these are probably the cause of your DNS issues.",
+      "gridPos": { "x": 6, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum(count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"DPT=53|DPT=853\" [$__range]))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 1 },
+          { "color": "orange", "value": 50 },
+          { "color": "red", "value": 500 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Affected LAN devices",
+      "description": "Distinct internal source IPs that had a DNS packet dropped. If your DNS issues correlate with one device's IP, this points right at it.",
+      "gridPos": { "x": 12, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "count(count by (src) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"DPT=53|DPT=853\" |~ \"$lan_filter\" | regexp `SRC=(?P<src>[^ ]+)` [$__range])))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Last DNS drop",
+      "description": "Time since the most recent DNS-related drop. If this is recent and you're having problems right now, the BGW is involved.",
+      "gridPos": { "x": 18, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "topk(1, max by () (timestamp(\"\", {host=\"att-router\"} |~ \"DPT=53|DPT=853\")))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
+      "fieldConfig": { "defaults": { "unit": "dateTimeFromNow" }, "overrides": [] },
+      "options": { "colorMode": "value", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 10, "type": "timeseries", "title": "DNS drops per minute (LAN→WAN)",
+      "description": "Time series of LAN-originated DNS drops. Spikes correlate with DNS outages your devices experienced. If this lines up with the times you've been losing DNS, the BGW is blocking.",
+      "gridPos": { "x": 0, "y": 7, "w": 24, "h": 8 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum by (dpt) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"DPT=53|DPT=853\" |~ \"$lan_filter\" | regexp `DPT=(?P<dpt>[^ ]+)` [1m]))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "legendFormat": "port {{dpt}}" }],
+      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 25, "stacking": { "mode": "normal" } }, "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "sum", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 20, "type": "table", "title": "Top LAN devices with DNS blocked",
+      "description": "The smoking-gun panel for your DNS troubleshooting. Each row is an internal IP whose DNS query was denied by the firewall. If a device is trying to use a DNS server the BGW blocks (e.g. you set 1.1.1.1 manually but BGW intercepts DNS), it shows up here.",
+      "gridPos": { "x": 0, "y": 15, "w": 12, "h": 10 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "topk(20, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"DPT=53|DPT=853\" |~ \"$lan_filter\" | regexp `SRC=(?P<src>[^ ]+)` [$__range])))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "instant": true, "format": "table" }],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "src": "LAN Source IP", "Value": "DNS drops" } } },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "DNS drops", "desc": true }] } }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
+        { "matcher": { "id": "byName", "options": "DNS drops" },
+          "properties": [
+            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+            { "id": "custom.align", "value": "right" },
+            { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 100 }
+            ] } }
+          ] }
+      ] },
+      "options": { "showHeader": true }
+    },
+    {
+      "id": 21, "type": "table", "title": "Top external DNS servers being blocked",
+      "description": "Which upstream resolvers your LAN is trying to reach but getting denied. Common public resolvers (8.8.8.8 Google, 1.1.1.1 Cloudflare, 9.9.9.9 Quad9) appearing here means the BGW is intercepting outbound DNS — usually because of an AT&T DNS hijack feature or strict DPI rules. If your LAN device set its DNS to one of these and the router blocks it, that device fails resolution silently.",
+      "gridPos": { "x": 12, "y": 15, "w": 12, "h": 10 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "topk(20, sum by (dst) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"DPT=53|DPT=853\" |~ \"$lan_filter\" | regexp `DST=(?P<dst>[^ ]+)` [$__range])))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "instant": true, "format": "table" }],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "dst": "Blocked DNS Server", "Value": "Attempts" } } },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "Attempts", "desc": true }] } }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
+        { "matcher": { "id": "byName", "options": "Attempts" },
+          "properties": [
+            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+            { "id": "custom.align", "value": "right" }
+          ] }
+      ] },
+      "options": { "showHeader": true }
+    },
+    {
+      "id": 30, "type": "table", "title": "DNS drop reasons (why the BGW killed it)",
+      "description": "POLICY-* = a configured firewall rule denied the packet. IP-SRC = anti-spoofing failure (source IP didn't match the interface it came in on — e.g. wrong-subnet device, mis-routed traffic). The reason vocabulary tells you whether to look at firewall rules or device subnet config.",
+      "gridPos": { "x": 0, "y": 25, "w": 12, "h": 8 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "topk(15, sum by (reason) (count_over_time({host=\"att-router\"} |~ \"DPT=53|DPT=853\" |~ \"$lan_filter\" | regexp `reason=(?P<reason>[^ ]+)` [$__range])))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "instant": true, "format": "table" }],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "reason": "Reason", "Value": "Hits" } } },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "Hits", "desc": true }] } }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
+        { "matcher": { "id": "byName", "options": "Hits" },
+          "properties": [
+            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+            { "id": "custom.align", "value": "right" }
+          ] }
+      ] },
+      "options": { "showHeader": true }
+    },
+    {
+      "id": 31, "type": "table", "title": "Protocol breakdown",
+      "description": "UDP/53 vs TCP/53 vs TCP/853 (DoT). Most resolvers use UDP first; TCP fallback usually means a large response or a failure mode. DoT (port 853) means the device is trying encrypted DNS — common with Apple devices and modern OSes. If only DoT is blocked, BGW may have explicit DoT denial.",
+      "gridPos": { "x": 12, "y": 25, "w": 12, "h": 8 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "sum by (proto, dpt) (count_over_time({host=\"att-router\"} |~ \"DPT=53|DPT=853\" |~ \"$lan_filter\" | regexp `PROTO=(?P<proto>[^ ]+)` | regexp `DPT=(?P<dpt>[^ ]+)` [$__range]))",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "instant": true, "format": "table" }],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "proto": "Protocol", "dpt": "Port", "Value": "Hits" } } },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "Hits", "desc": true }] } }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
+        { "matcher": { "id": "byName", "options": "Hits" },
+          "properties": [
+            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+            { "id": "custom.align", "value": "right" }
+          ] }
+      ] },
+      "options": { "showHeader": true }
+    },
+    {
+      "id": 40, "type": "logs", "title": "Recent DNS drops (live tail)",
+      "description": "Raw firewall events for any packet to/from port 53 or 853. Filter by LAN IP using the variable above to focus on a specific device's failures.",
+      "gridPos": { "x": 0, "y": 33, "w": 24, "h": 14 },
+      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+      "targets": [{ "refId": "A",
+        "expr": "{host=\"att-router\"} |~ \"DPT=53|DPT=853\" |~ \"$lan_filter\"",
+        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
+        "maxLines": 1000 }],
+      "options": {
+        "showTime": true, "showLabels": false, "showCommonLabels": false,
+        "wrapLogMessage": true, "prettifyLogMessage": false,
+        "enableLogDetails": true, "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      }
+    }
+  ]
+}
