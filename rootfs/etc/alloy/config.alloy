@@ -94,6 +94,31 @@ loki.process "syslog" {
   }
 }
 
+// ---- AT&T BGW320 router log forwarder (raw UDP, no syslog framing) ----
+// The BGW320 emits raw text log lines (typically "PolicyName: ..." etc.)
+// over UDP/1514 without the RFC3164/5424 <priority> prefix. Standard
+// loki.source.syslog parsers reject them with 'invalid framing. first
+// byte: "P"' (verified empirically 2026-05-03).
+//
+// loki.source.syslog has an experimental syslog_format = "raw" mode that
+// disables protocol parsing — each UDP datagram becomes one log line as-is.
+// Requires the alloy binary to run with --stability.level=experimental
+// (see ../s6-overlay/s6-rc.d/alloy/run).
+//
+// We attach static labels here rather than trying to extract them from a
+// non-existent priority/facility. Severity tagging is impossible without
+// the protocol header — Grafana queries can scrape it from the message
+// body via LogQL pattern operators if needed.
+loki.source.syslog "att_router" {
+  listener {
+    address       = "0.0.0.0:1514"
+    protocol      = "udp"
+    syslog_format = "raw"
+    labels        = { job = "syslog_remote", host = "att-router" }
+  }
+  forward_to = [loki.write.local.receiver]
+}
+
 // ---- Sink ----
 loki.write "local" {
   endpoint {
