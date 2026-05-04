@@ -94,21 +94,52 @@ loki.process "syslog" {
   }
 }
 
-// ---- AT&T BGW320 router syslog (network-received) ----
-// The router is configured (Diagnostics → Syslog) to forward at Notice level
-// to this container's macvlan IP on UDP/1514. Alloy's RFC3164 parser
-// auto-extracts severity / facility / hostname / app_name / proc_id as
-// labels, so Grafana queries can filter on them directly without regex
-// stages. Forwarded straight to the local sink — the existing
-// loki.process.syslog regex pipeline is for file-based syslog where
-// severity is just text in the message; protocol-syslog already carries it.
-loki.source.syslog "att_router" {
-  listener {
-    address       = "0.0.0.0:1514"
-    protocol      = "udp"
-    syslog_format = "rfc3164"
-    labels        = { job = "syslog_remote", host = "att-router" }
+// ---- AT&T BGW320 router log forwarder (raw UDP, NOT RFC-formatted syslog) ----
+// The BGW320 emits raw text log lines (typically "PolicyName: ..." style)
+// over UDP without the RFC3164/5424 <priority> prefix, so Alloy's
+// loki.source.syslog parser drops them with "invalid or unsupported framing.
+// first byte: 'P'". Verified empirically 2026-05-03 by tailing alloy logs
+// while the router was actively forwarding.
+//
+// Workaround: use OpenTelemetry's udplog receiver, which accepts each UDP
+// datagram as one plain log line with no framing requirements. We then
+// inject host/job attributes, promote them to Loki labels via the
+// loki.attribute.labels convention, and ship through otelcol.exporter.loki
+// into the same loki.write.local sink as the rest of the pipeline.
+otelcol.receiver.udplog "att_router" {
+  listen_address = "0.0.0.0:1514"
+  output {
+    logs = [otelcol.processor.attributes.att_router.input]
   }
+}
+
+otelcol.processor.attributes "att_router" {
+  // Tag every record so Grafana queries like {host="att-router"} work the
+  // same way they did under the original syslog plan.
+  action {
+    key    = "host"
+    value  = "att-router"
+    action = "insert"
+  }
+  action {
+    key    = "job"
+    value  = "syslog_remote"
+    action = "insert"
+  }
+  // Magic key — otelcol.exporter.loki reads this and promotes the listed
+  // attributes to Loki stream labels (rather than leaving them as
+  // structured metadata buried inside each log line).
+  action {
+    key    = "loki.attribute.labels"
+    value  = "host,job"
+    action = "insert"
+  }
+  output {
+    logs = [otelcol.exporter.loki.att_router.input]
+  }
+}
+
+otelcol.exporter.loki "att_router" {
   forward_to = [loki.write.local.receiver]
 }
 
