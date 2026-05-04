@@ -83,15 +83,19 @@
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
-      "id": 5, "type": "stat", "title": "Last event",
-      "description": "Time since the most recent BGW log line. Indicates whether the syslog forwarder is currently receiving from the router.",
+      "id": 5, "type": "stat", "title": "Events / min (last 5m)",
+      "description": "Recent BGW log rate. Zero means the forwarder isn't receiving — either router stopped sending, network path broke, or the listener died.",
       "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "topk(1, max by () (timestamp(\"\", {host=\"att-router\"})))",
+        "expr": "sum(count_over_time({host=\"att-router\"}[5m])) / 5",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
-      "fieldConfig": { "defaults": { "unit": "dateTimeFromNow" }, "overrides": [] },
-      "options": { "colorMode": "value", "reduceOptions": { "calcs": ["lastNotNull"] } }
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 1,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "red", "value": null },
+          { "color": "green", "value": 0.1 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
       "id": 10, "type": "timeseries", "title": "Events per minute by hook",

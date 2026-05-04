@@ -149,10 +149,11 @@
 
     {
       "id": 30, "type": "logs", "title": "Logs",
+      "description": "Live tail across all selected jobs. The container and level variables only apply to docker logs (host syslog and remote syslog don't carry those labels), so the Logs panel selects on {job} alone — use the Search regex box to slice further. The stats above DO use the container/level filters where applicable.",
       "gridPos": { "x": 0, "y": 20, "w": 24, "h": 16 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "{job=~\"$job\", container=~\"$container\", level=~\"$level\"} |~ \"$search\"",
+        "expr": "{job=~\"$job\"} |~ \"$search\"",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
       "options": {
         "showTime": true,

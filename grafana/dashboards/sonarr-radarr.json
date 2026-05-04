@@ -69,9 +69,9 @@
       "gridPos": { "x": 18, "y": 1, "w": 6, "h": 4 },
       "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
       "links": [{ "title": "Open Activity/Queue", "url": "http://192.168.1.21:8989/activity/queue", "targetBlank": true }],
-      "targets": [{ "refId": "A", "expr": "sum(sonarr_queue_total)", "instant": true,
+      "targets": [{ "refId": "A", "expr": "sum(sonarr_queue_total) or vector(0)", "instant": true,
         "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "noValue": "0" }, "overrides": [] },
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
 
@@ -129,10 +129,11 @@
     },
     {
       "id": 31, "type": "table", "title": "Sonarr Health",
+      "description": "Active health issues from Sonarr. exportarr emits a placeholder row with empty fields when there are zero issues — we filter it out by selecting only rows with a non-empty type label, so the table shows ✅ No issues when Sonarr is happy.",
       "gridPos": { "x": 12, "y": 13, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
       "links": [{ "title": "Open Sonarr System", "url": "http://192.168.1.21:8989/system/status", "targetBlank": true }],
-      "targets": [{ "refId": "A", "expr": "sonarr_system_health_issues", "format": "table", "instant": true,
+      "targets": [{ "refId": "A", "expr": "sonarr_system_health_issues{type!=\"\"}", "format": "table", "instant": true,
         "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
       "transformations": [
         { "id": "organize", "options": {
@@ -140,7 +141,7 @@
           "renameByName": { "type": "Severity", "message": "Issue", "source": "Source" }
         } }
       ],
-      "fieldConfig": { "defaults": {},
+      "fieldConfig": { "defaults": { "noValue": "✅ No issues" },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Severity" }, "properties": [
             { "id": "mappings", "value": [{ "type": "value", "options": {
@@ -209,9 +210,9 @@
       "gridPos": { "x": 18, "y": 22, "w": 6, "h": 4 },
       "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
       "links": [{ "title": "Open Activity/Queue", "url": "http://192.168.1.6:7878/activity/queue", "targetBlank": true }],
-      "targets": [{ "refId": "A", "expr": "sum(radarr_queue_total)", "instant": true,
+      "targets": [{ "refId": "A", "expr": "sum(radarr_queue_total) or vector(0)", "instant": true,
         "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "noValue": "0" }, "overrides": [] },
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
 
@@ -272,7 +273,7 @@
       "gridPos": { "x": 12, "y": 34, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
       "links": [{ "title": "Open Radarr System", "url": "http://192.168.1.6:7878/system/status", "targetBlank": true }],
-      "targets": [{ "refId": "A", "expr": "radarr_system_health_issues", "format": "table", "instant": true,
+      "targets": [{ "refId": "A", "expr": "radarr_system_health_issues{type!=\"\"}", "format": "table", "instant": true,
         "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
       "transformations": [
         { "id": "organize", "options": {
@@ -280,7 +281,7 @@
           "renameByName": { "type": "Severity", "message": "Issue", "source": "Source" }
         } }
       ],
-      "fieldConfig": { "defaults": {},
+      "fieldConfig": { "defaults": { "noValue": "✅ No issues" },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Severity" }, "properties": [
             { "id": "mappings", "value": [{ "type": "value", "options": {

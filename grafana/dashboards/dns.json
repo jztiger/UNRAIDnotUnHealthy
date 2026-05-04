@@ -215,15 +215,20 @@
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
-      "id": 4, "type": "stat", "title": "Last DNS drop",
-      "description": "Time since the most recent DNS-related drop. If this is recent and you're having problems right now, the BGW is involved.",
+      "id": 4, "type": "stat", "title": "DNS drops / min (last 5m)",
+      "description": "Recent DNS-drop rate. Non-zero = the BGW is actively blocking DNS right now.",
       "gridPos": { "x": 18, "y": 28, "w": 6, "h": 4 },
       "datasource": { "type": "loki", "uid": "unhealthy-loki" },
       "targets": [{ "refId": "A",
-        "expr": "topk(1, max by () (timestamp(\"\", {host=\"att-router\"} |~ \"DPT=53|DPT=853\")))",
+        "expr": "sum(count_over_time({host=\"att-router\"} |~ \"DPT=53|DPT=853\" [5m])) / 5",
         "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
-      "fieldConfig": { "defaults": { "unit": "dateTimeFromNow" }, "overrides": [] },
-      "options": { "colorMode": "value", "reduceOptions": { "calcs": ["lastNotNull"] } }
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 1,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null },
+          { "color": "yellow", "value": 0.1 },
+          { "color": "red", "value": 5 }
+        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
       "id": 10, "type": "timeseries", "title": "DNS drops per minute (LAN→WAN)",
