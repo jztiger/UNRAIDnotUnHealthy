@@ -135,7 +135,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       bash \
       curl \
       xz-utils \
-      python3-minimal \
+      python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install s6-overlay
