@@ -952,7 +952,7 @@
         "defaults": {
           "unit": "short",
           "color": {
-            "mode": "value"
+            "mode": "thresholds"
           },
           "noValue": "0",
           "thresholds": {
@@ -1009,7 +1009,7 @@
         "defaults": {
           "unit": "short",
           "color": {
-            "mode": "value"
+            "mode": "thresholds"
           },
           "noValue": "0",
           "thresholds": {
