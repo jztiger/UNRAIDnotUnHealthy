@@ -136,6 +136,16 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
       <Mode/>
     </Variable>
     <Variable>
+      <Value>192.168.1.254</Value>
+      <Name>BGW_HOST</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>BGW_DEVICE_ACCESS_CODE</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
       <Value>99</Value>
       <Name>PUID</Name>
       <Mode/>
@@ -192,4 +202,7 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
   <Config Name="Radarr URL" Target="RADARR_URL" Default="http://192.168.1.6:7878" Mode="" Description="Base URL of your Radarr instance. Leave RADARR_API_KEY blank below to disable the exporter." Type="Variable" Display="always" Required="false" Mask="false">http://192.168.1.6:7878</Config>
 
   <Config Name="Radarr API Key" Target="RADARR_API_KEY" Default="" Mode="" Description="From Radarr → Settings → General → API Key. Leave blank to disable the Radarr exporter and dashboard panels." Type="Variable" Display="always" Required="false" Mask="true"/>
+
+  <Config Name="BGW Host" Target="BGW_HOST" Default="192.168.1.254" Mode="" Description="LAN IP/hostname of the AT&amp;T BGW gateway. Used by bgw-syslog-forwarder + bgw-nat-scraper." Type="Variable" Display="advanced" Required="false" Mask="false">192.168.1.254</Config>
+  <Config Name="BGW Device Access Code" Target="BGW_DEVICE_ACCESS_CODE" Default="" Mode="" Description="Device access code printed on the side of the BGW. Used by bgw-nat-scraper to log in and read /cgi-bin/nattable.ha. Leave blank to disable NAT-table scraping (other BGW features keep working)." Type="Variable" Display="always" Required="false" Mask="true"/>
 </Container>

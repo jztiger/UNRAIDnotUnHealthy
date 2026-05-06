@@ -1,239 +1,1292 @@
 {
   "title": "AT&T BGW320 Firewall",
   "uid": "unhealthy-att-router",
-  "tags": ["unraid", "unhealthy", "network", "firewall"],
+  "tags": [
+    "unraid",
+    "unhealthy",
+    "network",
+    "firewall"
+  ],
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
   "editable": true,
   "refresh": "30s",
-  "time": { "from": "now-6h", "to": "now" },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
   "templating": {
     "list": [
       {
         "name": "hook",
         "type": "custom",
         "label": "Hook",
-        "query": "All : .* , INPUT (WAN→Router) : INPUT , FORWARD (LAN→WAN) : FORWARD , OUTPUT : OUTPUT",
-        "current": { "selected": false, "text": "All", "value": ".*" },
+        "query": "All : .* , INPUT (WAN\u2192Router) : INPUT , FORWARD (LAN\u2192WAN) : FORWARD , OUTPUT : OUTPUT",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": ".*"
+        },
         "includeAll": false
       },
       {
         "name": "search",
         "type": "textbox",
         "label": "Search (regex)",
-        "current": { "selected": false, "text": "", "value": "" }
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        }
       }
     ]
   },
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "panels": [
     {
-      "id": 1, "type": "stat", "title": "Total events (window)",
-      "gridPos": { "x": 0, "y": 0, "w": 5, "h": 4 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "sum(count_over_time({host=\"att-router\"} |~ \"$search\" [$__range]))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
-    },
-    {
-      "id": 2, "type": "stat", "title": "WAN→Router DROP attempts",
-      "description": "Hook=INPUT — random IPs from the internet hitting your public address. Background scanner noise is normal; spikes can indicate active probing.",
-      "gridPos": { "x": 5, "y": 0, "w": 5, "h": 4 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "sum(count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" [$__range]))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "green", "value": null },
-          { "color": "yellow", "value": 100 },
-          { "color": "orange", "value": 1000 },
-          { "color": "red", "value": 10000 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
-    },
-    {
-      "id": 3, "type": "stat", "title": "LAN→WAN DROP attempts",
-      "description": "Hook=FORWARD — your own LAN devices hitting blocked rules. If non-zero, look at Top LAN Sources panel below: it usually means a device is on the wrong subnet, has stale config, or is being filtered by a policy you forgot.",
-      "gridPos": { "x": 10, "y": 0, "w": 5, "h": 4 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "sum(count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"$search\" [$__range]))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "green", "value": null },
-          { "color": "yellow", "value": 1 },
-          { "color": "red", "value": 100 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
-    },
-    {
-      "id": 4, "type": "stat", "title": "Unique WAN attackers (window)",
-      "description": "Distinct source IPs probing from the internet. Higher = wider probe sweep; lower with high WAN attempts = focused attack from few sources.",
-      "gridPos": { "x": 15, "y": 0, "w": 5, "h": 4 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "count(count by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" | regexp `SRC=(?P<src>[^ ]+)` |~ \"$search\" [$__range])))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
-    },
-    {
-      "id": 5, "type": "stat", "title": "Events / min (last 5m)",
-      "description": "Recent BGW log rate. Zero means the forwarder isn't receiving — either router stopped sending, network path broke, or the listener died.",
-      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "sum(count_over_time({host=\"att-router\"}[5m])) / 5",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 1,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "red", "value": null },
-          { "color": "green", "value": 0.1 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
-    },
-    {
-      "id": 10, "type": "timeseries", "title": "Events per minute by hook",
-      "description": "Stacked rate of dropped packets split by netfilter hook. INPUT is WAN→router (internet noise). FORWARD is LAN→WAN (your devices).",
-      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "sum by (hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `hook=(?P<hook>[^ ]+)` [1m]))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-        "legendFormat": "{{hook}}" }],
-      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineWidth": 1, "fillOpacity": 25, "stacking": { "mode": "normal" } }, "unit": "short" }, "overrides": [] },
-      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["lastNotNull", "sum"] }, "tooltip": { "mode": "multi" } }
-    },
-    {
-      "id": 11, "type": "timeseries", "title": "Events per minute by DROP reason",
-      "description": "POLICY-INPUT-GEN-DISCARD = generic incoming-deny rule. IP-SRC = source IP fails an anti-spoof / RPF check. Spikes correlate with whatever changed (new device on wrong subnet, scanner, etc).",
-      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "sum by (reason) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `reason=(?P<reason>[^ ]+)` [1m]))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-        "legendFormat": "{{reason}}" }],
-      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "lineWidth": 1, "fillOpacity": 25, "stacking": { "mode": "normal" } }, "unit": "short" }, "overrides": [] },
-      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["lastNotNull", "sum"] }, "tooltip": { "mode": "multi" } }
-    },
-    {
-      "id": 20, "type": "table", "title": "Top WAN source IPs (INPUT, blocked)",
-      "description": "Internet IPs hitting your public address. Bubbling these into a table makes it obvious when one IP is hammering you (top entries with order-of-magnitude higher counts than the long tail).",
-      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 10 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | regexp `SRC=(?P<src>[^ ]+)` [$__range])))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-        "instant": true, "format": "table" }],
-      "transformations": [
-        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "src": "Source IP", "Value": "Hits" }, "indexByName": { "src": 0, "Value": 1 } } },
-        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "Hits", "desc": true }] } }
+      "id": 1,
+      "type": "stat",
+      "title": "Total events (window)",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({host=\"att-router\"} |~ \"$search\" [$__range]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          }
+        }
       ],
-      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
-        { "matcher": { "id": "byName", "options": "Hits" },
-          "properties": [
-            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
-            { "id": "custom.align", "value": "right" },
-            { "id": "thresholds", "value": { "mode": "absolute", "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 50 },
-              { "color": "orange", "value": 500 },
-              { "color": "red", "value": 5000 }
-            ] } }
-          ] }
-      ] },
-      "options": { "showHeader": true }
-    },
-    {
-      "id": 21, "type": "table", "title": "Top LAN source IPs (FORWARD, blocked)",
-      "description": "Your LAN devices being blocked. Sustained entries here are usually misconfigured (wrong subnet, stale DHCP reservation, hard-coded gateway). Empty table = LAN routing is clean.",
-      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 10 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"$search\" | regexp `SRC=(?P<src>[^ ]+)` [$__range])))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-        "instant": true, "format": "table" }],
-      "transformations": [
-        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "src": "LAN Source IP", "Value": "Hits" }, "indexByName": { "src": 0, "Value": 1 } } },
-        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "Hits", "desc": true }] } }
-      ],
-      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
-        { "matcher": { "id": "byName", "options": "Hits" },
-          "properties": [
-            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
-            { "id": "custom.align", "value": "right" },
-            { "id": "thresholds", "value": { "mode": "absolute", "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 1 },
-              { "color": "red", "value": 100 }
-            ] } }
-          ] }
-      ] },
-      "options": { "showHeader": true }
-    },
-    {
-      "id": 30, "type": "table", "title": "DROP reason breakdown",
-      "description": "What policy is actually blocking traffic. Gives you the vocabulary to start narrowing root cause when something legitimate is being denied.",
-      "gridPos": { "x": 0, "y": 22, "w": 12, "h": 7 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "topk(20, sum by (reason, hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `reason=(?P<reason>[^ ]+)` | regexp `hook=(?P<hook>[^ ]+)` [$__range])))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-        "instant": true, "format": "table" }],
-      "transformations": [
-        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "reason": "Reason", "hook": "Hook", "Value": "Hits" } } },
-        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "Hits", "desc": true }] } }
-      ],
-      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
-        { "matcher": { "id": "byName", "options": "Hits" },
-          "properties": [
-            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
-            { "id": "custom.align", "value": "right" }
-          ] }
-      ] },
-      "options": { "showHeader": true }
-    },
-    {
-      "id": 31, "type": "table", "title": "Top destination ports (WAN attempts)",
-      "description": "Which ports the internet is trying. SSH (22), Telnet (23), RDP (3389), and SMB (445) are perennial favorites; clusters around a single port usually mean a directed scan.",
-      "gridPos": { "x": 12, "y": 22, "w": 12, "h": 7 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "topk(20, sum by (dpt) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | regexp `DPT=(?P<dpt>[^ ]+)` [$__range])))",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-        "instant": true, "format": "table" }],
-      "transformations": [
-        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "dpt": "Destination Port", "Value": "Hits" } } },
-        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "Hits", "desc": true }] } }
-      ],
-      "fieldConfig": { "defaults": { "custom": { "align": "left" } }, "overrides": [
-        { "matcher": { "id": "byName", "options": "Hits" },
-          "properties": [
-            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
-            { "id": "custom.align", "value": "right" }
-          ] }
-      ] },
-      "options": { "showHeader": true }
-    },
-    {
-      "id": 40, "type": "logs", "title": "Recent firewall events",
-      "description": "Live tail of BGW log lines. Use the Hook variable above to focus on INPUT or FORWARD only; use Search to grep by IP or port. Wrap is on so you can see the full netfilter detail.",
-      "gridPos": { "x": 0, "y": 29, "w": 24, "h": 14 },
-      "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-      "targets": [{ "refId": "A",
-        "expr": "{host=\"att-router\"} |~ \"hook=$hook\" |~ \"$search\"",
-        "datasource": { "type": "loki", "uid": "unhealthy-loki" },
-        "maxLines": 1000 }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": []
+      },
       "options": {
-        "showTime": true, "showLabels": false, "showCommonLabels": false,
-        "wrapLogMessage": true, "prettifyLogMessage": false,
-        "enableLogDetails": true, "dedupStrategy": "none",
+        "colorMode": "value",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "WAN\u2192Router DROP attempts",
+      "description": "Hook=INPUT \u2014 random IPs from the internet hitting your public address. Background scanner noise is normal; spikes can indicate active probing.",
+      "gridPos": {
+        "x": 5,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" [$__range]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "orange",
+                "value": 1000
+              },
+              {
+                "color": "red",
+                "value": 10000
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "LAN\u2192WAN DROP attempts",
+      "description": "Hook=FORWARD \u2014 your own LAN devices hitting blocked rules. If non-zero, look at Top LAN Sources panel below: it usually means a device is on the wrong subnet, has stale config, or is being filtered by a policy you forgot.",
+      "gridPos": {
+        "x": 10,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"$search\" [$__range]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Unique WAN attackers (window)",
+      "description": "Distinct source IPs probing from the internet. Higher = wider probe sweep; lower with high WAN attempts = focused attack from few sources.",
+      "gridPos": {
+        "x": 15,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count(count by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" | regexp `SRC=(?P<src>[^ ]+)` |~ \"$search\" [$__range])))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Events / min (last 5m)",
+      "description": "Recent BGW log rate. Zero means the forwarder isn't receiving \u2014 either router stopped sending, network path broke, or the listener died.",
+      "gridPos": {
+        "x": 20,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({host=\"att-router\"}[5m])) / 5",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.1
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Events per minute by hook",
+      "description": "Stacked rate of dropped packets split by netfilter hook. INPUT is WAN\u2192router (internet noise). FORWARD is LAN\u2192WAN (your devices).",
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `hook=(?P<hook>[^ ]+)` [1m]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          },
+          "legendFormat": "{{hook}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 25,
+            "stacking": {
+              "mode": "normal"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "sum"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Events per minute by DROP reason",
+      "description": "POLICY-INPUT-GEN-DISCARD = generic incoming-deny rule. IP-SRC = source IP fails an anti-spoof / RPF check. Spikes correlate with whatever changed (new device on wrong subnet, scanner, etc).",
+      "gridPos": {
+        "x": 12,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (reason) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `reason=(?P<reason>[^ ]+)` [1m]))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          },
+          "legendFormat": "{{reason}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 25,
+            "stacking": {
+              "mode": "normal"
+            }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "sum"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "type": "table",
+      "title": "Top WAN source IPs (INPUT, blocked)",
+      "description": "Internet IPs hitting your public address. Bubbling these into a table makes it obvious when one IP is hammering you (top entries with order-of-magnitude higher counts than the long tail).",
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | regexp `SRC=(?P<src>[^ ]+)` [$__range])))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          },
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "src": "Source IP",
+              "Value": "Hits"
+            },
+            "indexByName": {
+              "src": 0,
+              "Value": 1
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Hits",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 50
+                    },
+                    {
+                      "color": "orange",
+                      "value": 500
+                    },
+                    {
+                      "color": "red",
+                      "value": 5000
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 21,
+      "type": "table",
+      "title": "Top LAN source IPs (FORWARD, blocked)",
+      "description": "Your LAN devices being blocked. Sustained entries here are usually misconfigured (wrong subnet, stale DHCP reservation, hard-coded gateway). Empty table = LAN routing is clean.",
+      "gridPos": {
+        "x": 12,
+        "y": 12,
+        "w": 12,
+        "h": 10
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(25, sum by (src) (count_over_time({host=\"att-router\"} |~ \"hook=FORWARD\" |~ \"$search\" | regexp `SRC=(?P<src>[^ ]+)` [$__range])))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          },
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "src": "LAN Source IP",
+              "Value": "Hits"
+            },
+            "indexByName": {
+              "src": 0,
+              "Value": 1
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Hits",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 100
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 30,
+      "type": "table",
+      "title": "DROP reason breakdown",
+      "description": "What policy is actually blocking traffic. Gives you the vocabulary to start narrowing root cause when something legitimate is being denied.",
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 12,
+        "h": 7
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(20, sum by (reason, hook) (count_over_time({host=\"att-router\"} |~ \"$search\" | regexp `reason=(?P<reason>[^ ]+)` | regexp `hook=(?P<hook>[^ ]+)` [$__range])))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          },
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "reason": "Reason",
+              "hook": "Hook",
+              "Value": "Hits"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Hits",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 31,
+      "type": "table",
+      "title": "Top destination ports (WAN attempts)",
+      "description": "Which ports the internet is trying. SSH (22), Telnet (23), RDP (3389), and SMB (445) are perennial favorites; clusters around a single port usually mean a directed scan.",
+      "gridPos": {
+        "x": 12,
+        "y": 22,
+        "w": 12,
+        "h": 7
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(20, sum by (dpt) (count_over_time({host=\"att-router\"} |~ \"hook=INPUT\" |~ \"$search\" | regexp `DPT=(?P<dpt>[^ ]+)` [$__range])))",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          },
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "dpt": "Destination Port",
+              "Value": "Hits"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Hits",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hits"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "custom.align",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 40,
+      "type": "logs",
+      "title": "Recent firewall events",
+      "description": "Live tail of BGW log lines. Use the Hook variable above to focus on INPUT or FORWARD only; use Search to grep by IP or port. Wrap is on so you can see the full netfilter detail.",
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 14
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "unhealthy-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{host=\"att-router\"} |~ \"hook=$hook\" |~ \"$search\"",
+          "datasource": {
+            "type": "loki",
+            "uid": "unhealthy-loki"
+          },
+          "maxLines": 1000
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
         "sortOrder": "Descending"
+      }
+    },
+    {
+      "id": 41,
+      "type": "stat",
+      "title": "BGW NAT entries (total)",
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries_total",
+          "refId": "A",
+          "instant": true,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "(scraper not configured)",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 4000
+              },
+              {
+                "color": "orange",
+                "value": 8000
+              },
+              {
+                "color": "red",
+                "value": 12000
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 42,
+      "type": "stat",
+      "title": "NAT TCP",
+      "gridPos": {
+        "x": 6,
+        "y": 43,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries{proto=\"tcp\"}",
+          "refId": "A",
+          "instant": true,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "value"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 43,
+      "type": "stat",
+      "title": "NAT UDP",
+      "gridPos": {
+        "x": 10,
+        "y": 43,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries{proto=\"udp\"}",
+          "refId": "A",
+          "instant": true,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "value"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 44,
+      "type": "stat",
+      "title": "Scrape status",
+      "gridPos": {
+        "x": 14,
+        "y": 43,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_scrape_success",
+          "refId": "A",
+          "instant": true,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 45,
+      "type": "stat",
+      "title": "Scrape age",
+      "gridPos": {
+        "x": 18,
+        "y": 43,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_scrape_age_seconds",
+          "refId": "A",
+          "instant": true,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 180
+              },
+              {
+                "color": "red",
+                "value": 600
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 46,
+      "type": "timeseries",
+      "title": "BGW NAT entries over time (by protocol)",
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries{proto=\"tcp\"}",
+          "refId": "A",
+          "legendFormat": "TCP"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries{proto=\"udp\"}",
+          "refId": "B",
+          "legendFormat": "UDP"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries{proto=\"icmp\"}",
+          "refId": "C",
+          "legendFormat": "ICMP"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries_total",
+          "refId": "D",
+          "legendFormat": "Total"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 47,
+      "type": "timeseries",
+      "title": "NAT entries by LAN source IP (top 10)",
+      "gridPos": {
+        "x": 12,
+        "y": 47,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "bgw_nat_entries_by_lan_ip",
+          "refId": "A",
+          "legendFormat": "{{lan_ip}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
       }
     }
   ]

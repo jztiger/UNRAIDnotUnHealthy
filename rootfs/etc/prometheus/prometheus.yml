@@ -58,6 +58,15 @@ scrape_configs:
     static_configs:
       - targets: ['127.0.0.1:9708']
 
+  # BGW NAT-table size scraper (sidecar service that polls /cgi-bin/nattable.ha
+  # and exposes entry counts as gauges). Stays alive but reports
+  # bgw_nat_scrape_success=0 when BGW_DEVICE_ACCESS_CODE is unset, so the
+  # dashboard surfaces "not configured" rather than going silent.
+  - job_name: bgw_nat
+    scrape_interval: 60s
+    static_configs:
+      - targets: ['127.0.0.1:9145']
+
   # blackbox_exporter self-metrics (the probe daemon's internals, not the probes)
   - job_name: blackbox
     scrape_interval: 60s
