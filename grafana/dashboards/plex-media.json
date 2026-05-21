@@ -736,7 +736,21 @@
           }
         },
         "overrides": []
-      }
+      },
+      "transformations": [
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "files",
+                "destinationType": "number"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ]
     },
     {
       "id": 16,
