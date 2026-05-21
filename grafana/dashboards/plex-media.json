@@ -1564,6 +1564,189 @@
           }
         ]
       }
+    },
+    {
+      "id": 59,
+      "type": "row",
+      "title": "Phase 2 \u2014 HDR/4K SDR-sibling remediation",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      }
+    },
+    {
+      "id": 60,
+      "type": "stat",
+      "title": "Phase 2 \u2014 HDR/4K sibling coverage",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-phase2-sqlite"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 63
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-phase2-sqlite"
+          },
+          "queryType": "table",
+          "rawQueryText": "SELECT pct AS \"coverage %\", siblings, targets FROM sibling_coverage;",
+          "queryText": "SELECT pct AS \"coverage %\", siblings, targets FROM sibling_coverage;",
+          "timeColumns": [],
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^coverage %$/"
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 61,
+      "type": "barchart",
+      "title": "Phase 2 \u2014 Video transcodes by reason (30d)",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-tautulli-sqlite"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 6,
+        "y": 63
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-tautulli-sqlite"
+          },
+          "queryType": "table",
+          "rawQueryText": "SELECT reason, COUNT(*) AS sessions FROM (SELECT CASE WHEN shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND (shi.video_dynamic_range LIKE '%HDR%' OR shi.video_dynamic_range LIKE '%Dolby%') THEN 'Addressable: 4K HEVC HDR/DV' WHEN shi.video_codec='hevc' AND shi.video_full_resolution='4k' THEN 'Addressable: 4K HEVC SDR' WHEN sh.quality_profile NOT IN ('Original','') AND sh.quality_profile IS NOT NULL THEN 'User quality cap (not addressable)' ELSE 'Other' END AS reason FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE sh.started >= strftime('%s','now','-30 days') AND shi.video_decision='transcode') GROUP BY reason ORDER BY sessions DESC;",
+          "queryText": "SELECT reason, COUNT(*) AS sessions FROM (SELECT CASE WHEN shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND (shi.video_dynamic_range LIKE '%HDR%' OR shi.video_dynamic_range LIKE '%Dolby%') THEN 'Addressable: 4K HEVC HDR/DV' WHEN shi.video_codec='hevc' AND shi.video_full_resolution='4k' THEN 'Addressable: 4K HEVC SDR' WHEN sh.quality_profile NOT IN ('Original','') AND sh.quality_profile IS NOT NULL THEN 'User quality cap (not addressable)' ELSE 'Other' END AS reason FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE sh.started >= strftime('%s','now','-30 days') AND shi.video_decision='transcode') GROUP BY reason ORDER BY sessions DESC;",
+          "timeColumns": [],
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "sessions",
+                "destinationType": "number"
+              }
+            ],
+            "fields": {}
+          }
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "legend": {
+          "displayMode": "hidden"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 80
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 62,
+      "type": "timeseries",
+      "title": "Phase 2 \u2014 Addressable 4K HEVC transcodes/day (60d)",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "unhealthy-tautulli-sqlite"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 15,
+        "y": 63
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "unhealthy-tautulli-sqlite"
+          },
+          "queryType": "time series",
+          "rawQueryText": "SELECT CAST(sh.started AS INTEGER) AS time, 1 AS transcodes FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE shi.video_decision='transcode' AND shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND sh.started >= strftime('%s','now','-60 days');",
+          "queryText": "SELECT CAST(sh.started AS INTEGER) AS time, 1 AS transcodes FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE shi.video_decision='transcode' AND shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND sh.started >= strftime('%s','now','-60 days');",
+          "timeColumns": [
+            "time"
+          ],
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "barAlignment": 0,
+            "fillOpacity": 60
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "single"
+        },
+        "legend": {
+          "displayMode": "hidden"
+        }
+      }
     }
   ]
 }
