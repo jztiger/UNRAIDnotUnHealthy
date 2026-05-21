@@ -36,3 +36,23 @@ datasources:
     editable: false
     jsonData:
       path: /var/lib/grafana/plex_data/plex_snapshot.db
+
+  # Tautulli watch-history snapshot. Refreshed every 15 min by the
+  # dbexport_snapshot User Script. Used by Phase 2 transcode-reason panels.
+  - name: Tautulli
+    uid: unhealthy-tautulli-sqlite
+    type: frser-sqlite-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      path: /var/lib/grafana/plex_data/tautulli_snapshot.db
+
+  # Tdarr queue/processed snapshot. Refreshed every 15 min by the
+  # dbexport_snapshot User Script. Used by Phase 1/2 progress panels.
+  - name: Tdarr
+    uid: unhealthy-tdarr-sqlite
+    type: frser-sqlite-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      path: /var/lib/grafana/plex_data/tdarr_snapshot.db
