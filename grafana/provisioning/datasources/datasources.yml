@@ -56,3 +56,14 @@ datasources:
     editable: false
     jsonData:
       path: /var/lib/grafana/plex_data/tdarr_snapshot.db
+
+  # Phase 2 sibling-coverage progress. Refreshed every 6h by
+  # phase2_sibling_coverage.sh (User Scripts). Targets from Plex DB,
+  # siblings counted by "- 1080p SDR" filename on disk.
+  - name: Phase2 Progress
+    uid: unhealthy-phase2-sqlite
+    type: frser-sqlite-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      path: /var/lib/grafana/plex_data/phase2_progress.db
