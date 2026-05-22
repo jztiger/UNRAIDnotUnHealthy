@@ -683,7 +683,7 @@
     },
     {
       "id": 15,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "Movies \u2014 Audio Codec",
       "gridPos": {
         "x": 0,
@@ -710,51 +710,28 @@
       ],
       "options": {
         "orientation": "horizontal",
-        "xTickLabelRotation": 0,
-        "showValue": "auto",
-        "stacking": "none",
-        "groupWidth": 0.7,
-        "barWidth": 0.97,
-        "barRadius": 0,
-        "tooltip": {
-          "mode": "single"
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^files$/",
+          "values": true
         },
-        "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
-        }
+        "showUnfilled": true
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 80,
-            "axisPlacement": "auto"
+            "mode": "continuous-GrYlRd"
           }
         },
         "overrides": []
-      },
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "files",
-                "destinationType": "number"
-              }
-            ],
-            "fields": {}
-          }
-        }
-      ]
+      }
     },
     {
       "id": 16,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "Movies \u2014 Audio Channels",
       "gridPos": {
         "x": 8,
@@ -781,51 +758,28 @@
       ],
       "options": {
         "orientation": "horizontal",
-        "xTickLabelRotation": 0,
-        "showValue": "auto",
-        "stacking": "none",
-        "groupWidth": 0.7,
-        "barWidth": 0.97,
-        "barRadius": 0,
-        "tooltip": {
-          "mode": "single"
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^files$/",
+          "values": true
         },
-        "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
-        }
+        "showUnfilled": true
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 80,
-            "axisPlacement": "auto"
+            "mode": "continuous-GrYlRd"
           }
         },
         "overrides": []
-      },
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "files",
-                "destinationType": "number"
-              }
-            ],
-            "fields": {}
-          }
-        }
-      ]
+      }
     },
     {
       "id": 17,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "Movies \u2014 Bitrate Distribution",
       "gridPos": {
         "x": 16,
@@ -852,64 +806,24 @@
       ],
       "options": {
         "orientation": "horizontal",
-        "xTickLabelRotation": 0,
-        "showValue": "auto",
-        "stacking": "none",
-        "groupWidth": 0.7,
-        "barWidth": 0.97,
-        "barRadius": 0,
-        "tooltip": {
-          "mode": "single"
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^files$/",
+          "values": true
         },
-        "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
-        }
+        "showUnfilled": true
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 80,
-            "axisPlacement": "auto"
+            "mode": "continuous-GrYlRd"
           }
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "ord"
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "viz": true,
-                  "legend": true,
-                  "tooltip": true
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "files",
-                "destinationType": "number"
-              }
-            ],
-            "fields": {}
-          }
-        }
-      ]
+        "overrides": []
+      }
     },
     {
       "id": 18,
@@ -1251,7 +1165,7 @@
     },
     {
       "id": 35,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "TV \u2014 Audio Codec",
       "gridPos": {
         "x": 0,
@@ -1278,51 +1192,28 @@
       ],
       "options": {
         "orientation": "horizontal",
-        "xTickLabelRotation": 0,
-        "showValue": "auto",
-        "stacking": "none",
-        "groupWidth": 0.7,
-        "barWidth": 0.97,
-        "barRadius": 0,
-        "tooltip": {
-          "mode": "single"
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^files$/",
+          "values": true
         },
-        "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
-        }
+        "showUnfilled": true
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 80,
-            "axisPlacement": "auto"
+            "mode": "continuous-GrYlRd"
           }
         },
         "overrides": []
-      },
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "files",
-                "destinationType": "number"
-              }
-            ],
-            "fields": {}
-          }
-        }
-      ]
+      }
     },
     {
       "id": 36,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "TV \u2014 Audio Channels",
       "gridPos": {
         "x": 8,
@@ -1349,51 +1240,28 @@
       ],
       "options": {
         "orientation": "horizontal",
-        "xTickLabelRotation": 0,
-        "showValue": "auto",
-        "stacking": "none",
-        "groupWidth": 0.7,
-        "barWidth": 0.97,
-        "barRadius": 0,
-        "tooltip": {
-          "mode": "single"
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^files$/",
+          "values": true
         },
-        "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
-        }
+        "showUnfilled": true
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 80,
-            "axisPlacement": "auto"
+            "mode": "continuous-GrYlRd"
           }
         },
         "overrides": []
-      },
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "files",
-                "destinationType": "number"
-              }
-            ],
-            "fields": {}
-          }
-        }
-      ]
+      }
     },
     {
       "id": 37,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "TV \u2014 Bitrate Distribution",
       "gridPos": {
         "x": 16,
@@ -1420,47 +1288,24 @@
       ],
       "options": {
         "orientation": "horizontal",
-        "xTickLabelRotation": 0,
-        "showValue": "auto",
-        "stacking": "none",
-        "groupWidth": 0.7,
-        "barWidth": 0.97,
-        "barRadius": 0,
-        "tooltip": {
-          "mode": "single"
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^files$/",
+          "values": true
         },
-        "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
-        }
+        "showUnfilled": true
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 80,
-            "axisPlacement": "auto"
+            "mode": "continuous-GrYlRd"
           }
         },
         "overrides": []
-      },
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "files",
-                "destinationType": "number"
-              }
-            ],
-            "fields": {}
-          }
-        }
-      ]
+      }
     },
     {
       "id": 50,
@@ -1642,7 +1487,7 @@
     },
     {
       "id": 61,
-      "type": "barchart",
+      "type": "bargauge",
       "title": "Phase 2 \u2014 Video transcodes by reason (30d)",
       "datasource": {
         "type": "frser-sqlite-datasource",
@@ -1667,34 +1512,22 @@
           "refId": "A"
         }
       ],
-      "transformations": [
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "sessions",
-                "destinationType": "number"
-              }
-            ],
-            "fields": {}
-          }
-        }
-      ],
       "options": {
         "orientation": "horizontal",
-        "showValue": "auto",
-        "legend": {
-          "displayMode": "hidden"
-        }
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^sessions$/",
+          "values": true
+        },
+        "showUnfilled": true
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "fillOpacity": 80
+            "mode": "continuous-GrYlRd"
           }
         },
         "overrides": []
@@ -1721,8 +1554,8 @@
             "uid": "unhealthy-tautulli-sqlite"
           },
           "queryType": "time series",
-          "rawQueryText": "SELECT CAST(sh.started AS INTEGER) AS time, 1 AS transcodes FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE shi.video_decision='transcode' AND shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND sh.started >= strftime('%s','now','-60 days');",
-          "queryText": "SELECT CAST(sh.started AS INTEGER) AS time, 1 AS transcodes FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE shi.video_decision='transcode' AND shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND sh.started >= strftime('%s','now','-60 days');",
+          "rawQueryText": "SELECT (sh.started/86400*86400)*1000 AS time, COUNT(*) AS transcodes FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE shi.video_decision='transcode' AND shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND sh.started >= strftime('%s','now','-60 days') GROUP BY sh.started/86400 ORDER BY time",
+          "queryText": "SELECT (sh.started/86400*86400)*1000 AS time, COUNT(*) AS transcodes FROM session_history sh JOIN session_history_media_info shi ON sh.id=shi.id WHERE shi.video_decision='transcode' AND shi.video_codec='hevc' AND shi.video_full_resolution='4k' AND sh.started >= strftime('%s','now','-60 days') GROUP BY sh.started/86400 ORDER BY time",
           "timeColumns": [
             "time"
           ],
