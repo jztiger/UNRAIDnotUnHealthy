@@ -37,25 +37,12 @@ datasources:
     jsonData:
       path: /var/lib/grafana/plex_data/plex_snapshot.db
 
-  # Tautulli watch-history snapshot. Refreshed every 15 min by the
-  # dbexport_snapshot User Script. Used by Phase 2 transcode-reason panels.
-  - name: Tautulli
-    uid: unhealthy-tautulli-sqlite
-    type: frser-sqlite-datasource
-    access: proxy
-    editable: false
-    jsonData:
-      path: /var/lib/grafana/plex_data/tautulli_snapshot.db
-
-  # Tdarr queue/processed snapshot. Refreshed every 15 min by the
-  # dbexport_snapshot User Script. Used by Phase 1/2 progress panels.
-  - name: Tdarr
-    uid: unhealthy-tdarr-sqlite
-    type: frser-sqlite-datasource
-    access: proxy
-    editable: false
-    jsonData:
-      path: /var/lib/grafana/plex_data/tdarr_snapshot.db
+  # NOTE: datasources "Tautulli History" (uid unhealthy-tautulli-sqlite) and
+  # "Tdarr DB" (uid unhealthy-tdarr-sqlite) already exist as UI-created
+  # datasources in the persistent grafana.db, pointing at the same
+  # tautulli_snapshot.db / tdarr_snapshot.db. Do NOT provision them here —
+  # Grafana refuses to provision over a matching UI-created uid and crash-loops.
+  # Phase 2 panels reference those uids directly and bind to the existing ones.
 
   # Phase 2 sibling-coverage progress. Refreshed every 6h by
   # phase2_sibling_coverage.sh (User Scripts). Targets from Plex DB,
