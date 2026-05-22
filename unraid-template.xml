@@ -48,6 +48,16 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
       <Mode>rw</Mode>
     </Volume>
     <Volume>
+      <HostDir>/mnt/user/appdb/unraidnotunhealthy/config-repo/grafana/dashboards</HostDir>
+      <ContainerDir>/etc/grafana/dashboards</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdb/unraidnotunhealthy/config-repo/grafana/provisioning</HostDir>
+      <ContainerDir>/etc/grafana/provisioning</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+    <Volume>
       <HostDir>/</HostDir>
       <ContainerDir>/rootfs</ContainerDir>
       <Mode>ro</Mode>
@@ -164,6 +174,10 @@ To enable NVIDIA GPU metrics, install the Nvidia-Driver plugin and add `--runtim
   <Config Name="Prometheus TSDB" Target="/var/lib/prometheus" Default="/mnt/user/appdb/unraidnotunhealthy/prometheus" Mode="rw" Description="Time-series storage. Path defaults to an array-only share (appdb) since the TSDB grows with retention; pointing it at appdata (cache-only) risks filling the cache pool." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdb/unraidnotunhealthy/prometheus</Config>
 
   <Config Name="Grafana Data" Target="/var/lib/grafana" Default="/mnt/user/appdb/unraidnotunhealthy/grafana" Mode="rw" Description="Grafana DB (users, settings, custom dashboards). Defaults to appdb (array-only) so it never pressures the cache pool." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdb/unraidnotunhealthy/grafana</Config>
+
+  <Config Name="Grafana Dashboards (git)" Target="/etc/grafana/dashboards" Default="/mnt/user/appdb/unraidnotunhealthy/config-repo/grafana/dashboards" Mode="ro" Description="Dashboards served from a host git checkout (read-only) so changes deploy via git pull + hot-reload, no rebuild. Leave default unless you relocate the config-repo clone." Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdb/unraidnotunhealthy/config-repo/grafana/dashboards</Config>
+
+  <Config Name="Grafana Provisioning (git)" Target="/etc/grafana/provisioning" Default="/mnt/user/appdb/unraidnotunhealthy/config-repo/grafana/provisioning" Mode="ro" Description="Datasource + dashboard-provider YAML from the host git checkout (read-only). Datasource changes need a grafana restart (s6-svc -r), not a recreate." Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdb/unraidnotunhealthy/config-repo/grafana/provisioning</Config>
 
   <Config Name="Host /" Target="/rootfs" Default="/" Mode="ro" Description="Host root for node_exporter filesystem stats." Type="Path" Display="advanced" Required="true" Mask="false">/</Config>
 
