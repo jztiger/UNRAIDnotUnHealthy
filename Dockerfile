@@ -144,6 +144,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 \
     && rm -rf /var/lib/apt/lists/*
 
+# Chromium runtime libraries for the grafana-image-renderer plugin. The plugin
+# bundles its own Chromium binary (downloaded into the persistent plugins dir at
+# startup) but needs these shared libs present on the Debian bookworm base.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 libdrm2 \
+      libgbm1 libgtk-3-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+      libxkbcommon0 libasound2 libpangocairo-1.0-0 libpango-1.0-0 libcairo2 \
+      libxshmfence1 fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install s6-overlay
 COPY --from=downloader /dl/s6-noarch.tar.xz /tmp/
 COPY --from=downloader /dl/s6-x86_64.tar.xz /tmp/
@@ -183,7 +193,9 @@ RUN useradd --system --no-create-home --shell /usr/sbin/nologin unhealthy \
 # env var triggers Grafana's own install-on-start, which writes into the
 # (live) volume, persists across recreates, and is a no-op once installed.
 # frser-sqlite-datasource powers the Plex Media Analysis dashboard.
-ENV GF_INSTALL_PLUGINS=frser-sqlite-datasource
+# grafana-image-renderer enables server-side panel/PNG rendering (used for
+# automated/headless verification of dashboards). Runs in-process via localhost.
+ENV GF_INSTALL_PLUGINS=frser-sqlite-datasource,grafana-image-renderer
 
 # Bake configs, s6 services, and provisioning into the image
 COPY rootfs/                       /
