@@ -54,3 +54,5 @@ datasources:
     editable: false
     jsonData:
       path: /var/lib/grafana/plex_data/phase2_progress.db
+
+# provisioning reload path validated 2026-05-22
