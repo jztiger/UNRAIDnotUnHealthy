@@ -6,5 +6,9 @@
 # (its path contains a version component, so resolve it via glob).
 CHROME_BIN="$(ls /opt/grafana-render/grafana-image-renderer/chrome-headless-shell/*/chrome-headless-shell-linux64/chrome-headless-shell 2>/dev/null | head -1)"
 export CHROME_BIN
+# Container HOME=/root is unreadable by the unhealthy user (uid 99); puppeteer
+# stats $HOME/.config/puppeteer and crashes with EACCES. Point HOME at a
+# writable dir. CHROME_BIN is set, so puppeteer never downloads Chrome.
+export HOME=/tmp
 cd /opt/grafana-render/grafana-image-renderer
-exec s6-setuidgid unhealthy ./plugin_start_linux_amd64 server
+exec s6-setuidgid unhealthy env HOME=/tmp ./plugin_start_linux_amd64 server
