@@ -144,6 +144,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 \
     && rm -rf /var/lib/apt/lists/*
 
+# Chromium runtime libraries for the grafana-image-renderer (runs as a
+# standalone HTTP render service — see the image-renderer s6 service). The
+# renderer bundles its own chrome-headless-shell but needs these shared libs
+# present on the Debian bookworm base.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 libdrm2 \
+      libgbm1 libgtk-3-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+      libxkbcommon0 libasound2 libpangocairo-1.0-0 libpango-1.0-0 libcairo2 \
+      libxshmfence1 fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install s6-overlay
 COPY --from=downloader /dl/s6-noarch.tar.xz /tmp/
 COPY --from=downloader /dl/s6-x86_64.tar.xz /tmp/
@@ -183,12 +194,21 @@ RUN useradd --system --no-create-home --shell /usr/sbin/nologin unhealthy \
 # env var triggers Grafana's own install-on-start, which writes into the
 # (live) volume, persists across recreates, and is a no-op once installed.
 # frser-sqlite-datasource powers the Plex Media Analysis dashboard.
-# NOTE: this env var is currently a no-op — grafana-server (run from the tarball
-# via s6, not the official Docker image) does not process GF_INSTALL_PLUGINS.
-# Plugins are installed manually into the persistent /var/lib/grafana/plugins
-# volume. (grafana-image-renderer was attempted here but its Node-pkg plugin
-# fails the go-plugin handshake under this build — see session 2026-05-21.)
+# NOTE: GF_INSTALL_PLUGINS is a no-op here — grafana-server (tarball via s6, not
+# the official Docker entrypoint) does not process it. frser is installed
+# manually into the persistent /var/lib/grafana/plugins volume.
 ENV GF_INSTALL_PLUGINS=frser-sqlite-datasource
+
+# grafana-image-renderer for server-side PNG rendering. The in-Grafana plugin
+# (go-plugin) mode fails the handshake under this tarball build, so we run the
+# renderer as a standalone HTTP service (see the image-renderer s6 service) and
+# point Grafana at it via GF_RENDERING_*. Baked to /opt — NOT the grafana volume,
+# which would mask it. grafana-cli fetches the platform zip incl. chrome-headless-shell.
+RUN mkdir -p /opt/grafana-render \
+ && /usr/share/grafana/bin/grafana-cli --pluginsDir /opt/grafana-render plugins install grafana-image-renderer \
+ && chown -R unhealthy:unhealthy /opt/grafana-render
+ENV GF_RENDERING_SERVER_URL=http://localhost:8081/render \
+    GF_RENDERING_CALLBACK_URL=http://localhost:3000/
 
 # Bake configs, s6 services, and provisioning into the image
 COPY rootfs/                       /

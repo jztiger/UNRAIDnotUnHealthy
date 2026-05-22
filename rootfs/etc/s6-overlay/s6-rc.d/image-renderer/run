@@ -1,0 +1,10 @@
+#!/command/with-contenv bash
+# grafana-image-renderer as a standalone HTTP render service on :8081.
+# Grafana reaches it via GF_RENDERING_SERVER_URL (localhost, same container).
+# Plugin go-plugin mode fails the handshake under this tarball-grafana build, so
+# we use server mode. CHROME_BIN points at the bundled chrome-headless-shell
+# (its path contains a version component, so resolve it via glob).
+CHROME_BIN="$(ls /opt/grafana-render/grafana-image-renderer/chrome-headless-shell/*/chrome-headless-shell-linux64/chrome-headless-shell 2>/dev/null | head -1)"
+export CHROME_BIN
+cd /opt/grafana-render/grafana-image-renderer
+exec s6-setuidgid unhealthy ./plugin_start_linux_amd64 server
