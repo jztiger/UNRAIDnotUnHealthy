@@ -6,7 +6,7 @@ providers:
     folder: UNRAIDnotUnHealthy
     type: file
     disableDeletion: true
-    allowUiUpdates: true
+    allowUiUpdates: false
     updateIntervalSeconds: 30
     options:
       path: /etc/grafana/dashboards
