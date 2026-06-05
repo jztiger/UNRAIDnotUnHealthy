@@ -1,0 +1,183 @@
+{
+  "uid": "unhealthy-internet",
+  "title": "Internet / WAN Health & Drops",
+  "tags": ["network", "wan", "internet"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 3 },
+      "options": {
+        "mode": "markdown",
+        "content": "**Internet-drop watch.** Active ICMP probes (every 5s) to internet anchors (1.1.1.1 / 8.8.8.8 / 9.9.9.9) and the **BGW LAN side** (192.168.1.254). Read it as a split test: **internet targets down while the BGW stays up = the fault is the BGW's WAN uplink / AT&T**, not the LAN. On the RTT panel, latency *climbing* under heavy transfer = bufferbloat; a *sudden flatline to down* with no RTT ramp = a hard drop / policer. The bottom panel overlays qBittorrent+SABnzbd (PIA VPN) throughput so you can line up drops against load."
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Internet anchors up (of 3)",
+      "gridPos": { "x": 0, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "sum(probe_success{job=\"icmp_probe\", target=~\"1.1.1.1|8.8.8.8|9.9.9.9\"})" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 3,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "red", "value": null },
+            { "color": "orange", "value": 1 },
+            { "color": "green", "value": 3 }
+          ] }
+        },
+        "overrides": []
+      },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "BGW (192.168.1.254) reachable",
+      "gridPos": { "x": 6, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "probe_success{job=\"icmp_probe\", target=\"192.168.1.254\"}" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] }
+        },
+        "overrides": []
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "RTT to 1.1.1.1 (now)",
+      "gridPos": { "x": 12, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "probe_icmp_duration_seconds{job=\"icmp_probe\", target=\"1.1.1.1\", phase=\"rtt\"}" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "orange", "value": 0.08 },
+            { "color": "red", "value": 0.25 }
+          ] }
+        },
+        "overrides": []
+      },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Packet loss to 1.1.1.1 (5m)",
+      "gridPos": { "x": 18, "y": 3, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "100 * (1 - avg_over_time(probe_success{job=\"icmp_probe\", target=\"1.1.1.1\"}[5m]))" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "orange", "value": 1 },
+            { "color": "red", "value": 10 }
+          ] }
+        },
+        "overrides": []
+      },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Reachability per target (1 = up, 0 = down)",
+      "gridPos": { "x": 0, "y": 7, "w": 24, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "probe_success{job=\"icmp_probe\"}", "legendFormat": "{{target}}" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 1,
+          "custom": { "drawStyle": "line", "lineInterpolation": "stepAfter", "fillOpacity": 15, "lineWidth": 2, "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["min", "mean"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "ICMP RTT per target (bufferbloat signal)",
+      "gridPos": { "x": 0, "y": 14, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "probe_icmp_duration_seconds{job=\"icmp_probe\", phase=\"rtt\"}", "legendFormat": "{{target}}" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s", "min": 0,
+          "custom": { "drawStyle": "line", "lineInterpolation": "linear", "fillOpacity": 8, "lineWidth": 1, "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "VPN app throughput — qBittorrent + SABnzbd (correlation)",
+      "gridPos": { "x": 12, "y": 14, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"binhex-(qbittorrent|sabnzbd)vpn\", interface=\"wg0\"}[1m])) * 8", "legendFormat": "upload" },
+        { "refId": "B", "expr": "sum(rate(container_network_receive_bytes_total{name=~\"binhex-(qbittorrent|sabnzbd)vpn\", interface=\"wg0\"}[1m])) * 8", "legendFormat": "download" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps", "min": 0,
+          "custom": { "drawStyle": "line", "lineInterpolation": "linear", "fillOpacity": 12, "lineWidth": 1, "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "calcs": ["max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "Target status snapshot",
+      "gridPos": { "x": 0, "y": 22, "w": 24, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [
+        { "refId": "A", "expr": "probe_success{job=\"icmp_probe\"}", "format": "table", "instant": true },
+        { "refId": "B", "expr": "probe_icmp_duration_seconds{job=\"icmp_probe\", phase=\"rtt\"}", "format": "table", "instant": true }
+      ],
+      "transformations": [
+        { "id": "merge", "options": {} },
+        { "id": "organize", "options": {
+          "excludeByName": { "Time": true, "__name__": true, "job": true, "instance": true, "phase": true },
+          "renameByName": { "target": "Target", "Value #A": "Up (1/0)", "Value #B": "RTT (s)" }
+        } }
+      ],
+      "options": { "showHeader": true }
+    }
+  ]
+}
