@@ -8,7 +8,20 @@
   "editable": true,
   "refresh": "30s",
   "time": { "from": "now-6h", "to": "now" },
-  "templating": { "list": [] },
+  "templating": { "list": [
+    {
+      "name": "rate", "type": "textbox", "label": "Rate ($/kWh)",
+      "query": "0.167", "current": { "text": "0.167", "value": "0.167" },
+      "options": [{ "text": "0.167", "value": "0.167", "selected": true }],
+      "hide": 0
+    },
+    {
+      "name": "ups_nominal_w", "type": "textbox", "label": "UPS nominal W",
+      "query": "600", "current": { "text": "600", "value": "600" },
+      "options": [{ "text": "600", "value": "600", "selected": true }],
+      "hide": 0
+    }
+  ] },
   "annotations": { "list": [] },
   "panels": [
     {
@@ -152,6 +165,64 @@
           { "color": "red", "value": 300 }
         ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
       "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 20, "type": "row", "title": "Running Cost  (UPS load × rate)  —  $rate $/kWh @ ${ups_nominal_w}W nominal",
+      "gridPos": { "x": 0, "y": 17, "w": 24, "h": 1 }, "collapsed": false, "panels": []
+    },
+    {
+      "id": 21, "type": "stat", "title": "Cost / hour (now)",
+      "description": "Current UPS real-power load × your rate. Estimate from load% × nominal W (~±10%).",
+      "gridPos": { "x": 0, "y": 18, "w": 4, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 3 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "area", "textMode": "value" }
+    },
+    {
+      "id": 22, "type": "stat", "title": "Projected $/day",
+      "description": "Cost/hour now × 24. Assumes current load holds.",
+      "gridPos": { "x": 4, "y": 18, "w": 4, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate * 24", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 2 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 23, "type": "stat", "title": "Projected $/month",
+      "description": "Cost/hour now × 730 (avg hours/month). Assumes current load holds.",
+      "gridPos": { "x": 8, "y": 18, "w": 4, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate * 730", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 2 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 24, "type": "stat", "title": "Cost (selected range)",
+      "description": "Actual energy cost across the dashboard's time range. Change the time picker (24h / 7d / 30d) to rescope.",
+      "gridPos": { "x": 12, "y": 18, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "avg_over_time(apcups_load_percent[$__range]) / 100 * $ups_nominal_w / 1000 * ($__range_s / 3600) * $rate", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 2 }, "overrides": [] },
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 25, "type": "stat", "title": "Energy (selected range)",
+      "description": "Energy used by the UPS load across the dashboard's time range.",
+      "gridPos": { "x": 18, "y": 18, "w": 6, "h": 5 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "avg_over_time(apcups_load_percent[$__range]) / 100 * $ups_nominal_w / 1000 * ($__range_s / 3600)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "kwatth", "decimals": 2 }, "overrides": [] },
+      "options": { "colorMode": "none", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "id": 26, "type": "timeseries", "title": "Cost / hour over time",
+      "gridPos": { "x": 0, "y": 23, "w": 24, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate", "legendFormat": "$/hr", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 3,
+        "custom": { "drawStyle": "line", "fillOpacity": 15, "lineWidth": 2 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
     }
   ]
 }
