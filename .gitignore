@@ -25,3 +25,7 @@ docker-compose.override.yaml
 
 # Per-host deploy config + secrets used by scripts/deploy-to-unraid.sh.
 scripts/.deploy.env
+
+# Python bytecode (ups-modbus-exporter)
+__pycache__/
+*.pyc

@@ -1,0 +1,5 @@
+#!/command/with-contenv bash
+# ups-modbus-exporter — poll the APC Smart-UPS over Modbus TCP and expose
+# output load / voltage / battery metrics on 127.0.0.1:9686. Configure the UPS
+# IP via UPS_MODBUS_HOST. Metrics-only; apcupsd (host, USB) drives shutdown.
+exec /usr/local/bin/ups-modbus-exporter

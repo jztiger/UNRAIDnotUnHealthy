@@ -23,6 +23,7 @@ A single Docker image bundles everything, supervised by
 | `smartctl_exporter`      | Per-disk SMART attributes, temps, spinup state    |
 | `nvidia_gpu_exporter`    | NVIDIA GPU utilisation, VRAM, temp, power         |
 | `ipmi_exporter`          | Motherboard sensors, fan RPM, power supply health |
+| `ups-modbus-exporter`    | APC Smart-UPS load, in/out voltage, battery, runtime (Modbus TCP) |
 
 All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 
@@ -31,7 +32,7 @@ All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 1. Add the template via Community Apps (or import `unraid-template.xml`).
 2. Set the host paths in the template (see **Required mounts** below).
 3. Apply. Open `http://<tower-ip>:3000` — default login `admin / admin`.
-4. Five dashboards land in the **UNRAIDnotUnHealthy** folder automatically.
+4. The bundled dashboards land in the **UNRAIDnotUnHealthy** folder automatically.
 
 ### Required mounts
 
@@ -62,6 +63,23 @@ pattern as scrutiny and other hardware-monitoring containers).
 | `LOKI_RETENTION` | `14d` | Log retention window. Logs use disk fast — bump only if you have headroom. |
 | `PUID` / `PGID` | `1000` / `1000` (Unraid template: `99` / `100`) | Remap the in-container `unhealthy` user to a host uid/gid so persistent volumes don't end up root-owned. |
 | `GF_SECURITY_ADMIN_PASSWORD` | unset | Initial Grafana admin password. If unset, Grafana defaults to `admin` and prompts a change on first login. |
+| `UPS_MODBUS_HOST` | `192.168.1.168` | LAN IP of an APC Smart-UPS with Modbus TCP enabled. See **APC UPS (optional)** below. |
+
+### APC UPS (optional)
+
+If you have an APC Smart-UPS with a network/SmartConnect port, enable Modbus on
+the UPS LCD (**Advanced → Configuration → Modbus**, read-only is enough) and set
+`UPS_MODBUS_HOST` to its LAN IP. The `ups-modbus-exporter` sidecar then polls
+Modbus TCP (port `502`) for output **load**, **input/output voltage**, output
+current/frequency, battery charge/voltage, and runtime, feeding the **UPS /
+Power** dashboard. The UPS must be reachable from the Unraid host.
+
+This is metrics-only and complementary to `apcupsd` — many Smart-UPS (e.g. the
+SMC "C" series) expose load and AC voltage over Modbus but **not** over USB/HID,
+so keep `apcupsd` on USB for graceful shutdown and use this for the richer
+telemetry. If the UPS is unreachable the exporter idles and
+`apcups_scrape_success` reads `0`, so the dashboard shows "no link" rather than
+silently disappearing.
 
 ### NVIDIA GPU (optional)
 
@@ -146,6 +164,7 @@ For updates: click **Update** in the Docker tab any time, or run `bash scripts/d
 | **Logs**       | Live tail + search across Docker containers and host syslog (Loki)     |
 | **Sonarr & Radarr** | Library size, missing, queue, quality breakdown, health, root-folder space — drill-downs link to the *arr UIs. Requires `SONARR_API_KEY` / `RADARR_API_KEY` env. |
 | **Plex Media Analysis** | Codec, resolution, HDR/Dolby Vision, audio codec/channels/Atmos, container, bitrate distribution, top-bitrate movies, drill-down table. Reads a daily SQLite snapshot at `/var/lib/grafana/plex_data/plex_snapshot.db` (mount optional — dashboard quietly shows "no data" without it). |
+| **UPS / Power** | APC Smart-UPS output load, input/output voltage, battery charge/voltage, runtime, current, frequency, and link status. Requires an APC UPS with Modbus TCP enabled and `UPS_MODBUS_HOST` set (see **APC UPS (optional)**). |
 
 All panels carry history (default 6h, configurable). The Plex Media Analysis dashboard is point-in-time (refreshes once a day with the snapshot).
 

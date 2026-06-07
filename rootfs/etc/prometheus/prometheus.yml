@@ -73,31 +73,15 @@ scrape_configs:
     static_configs:
       - targets: ['127.0.0.1:9115']
 
-  # ---- Active ICMP reachability + RTT (internet-drop / bufferbloat watch) ----
-  # Pings internet anchors AND the BGW LAN side every 5s via blackbox icmp_v4.
-  # Diagnosis split: if 192.168.1.254 (BGW) stays up while the internet targets
-  # fail, the fault is the BGW's WAN uplink / AT&T — not the LAN or this host.
-  # probe_icmp_duration_seconds{phase="rtt"} climbing under heavy transfer =
-  # bufferbloat; sudden probe_success=0 with flat RTT = a hard drop / policer.
-  - job_name: icmp_probe
-    scrape_interval: 5s
-    scrape_timeout: 4s
-    metrics_path: /probe
-    params:
-      module: [icmp_v4]
+  # APC UPS over Modbus TCP. The ups-modbus-exporter sidecar polls the UPS at
+  # UPS_MODBUS_HOST:502 and exposes load / output+input voltage / battery /
+  # runtime. Reports apcups_scrape_success=0 when the UPS is unreachable so the
+  # UPS dashboard shows "no link" rather than going silent. apcupsd on the
+  # Unraid host (USB) remains the graceful-shutdown trigger; this is metrics-only.
+  - job_name: ups_modbus
+    scrape_interval: 30s
     static_configs:
-      - targets:
-          - 1.1.1.1        # Cloudflare (internet anchor)
-          - 8.8.8.8        # Google (internet anchor)
-          - 9.9.9.9        # Quad9 (internet anchor)
-          - 192.168.1.254  # BGW320 LAN side (gateway hop — isolates WAN vs LAN)
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: target
-      - target_label: __address__
-        replacement: 127.0.0.1:9115
+      - targets: ['127.0.0.1:9686']
 
   # ---- Active DNS health probes via blackbox_exporter ----
   # Multi-target pattern: each scrape sends target=<resolver> + module=<probe>
