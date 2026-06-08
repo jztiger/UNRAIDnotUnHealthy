@@ -300,8 +300,11 @@ def _render_metrics():
         "# TYPE unifi_sensor_scrape_age_seconds gauge",
         f"unifi_sensor_scrape_age_seconds {age:.3f}",
     ]
+    # Sort by metric name so all samples for a family are contiguous (Prometheus
+    # exposition requires one group per metric). Stable sort preserves per-sensor
+    # order within a family.
     emitted = set()
-    for samp in samples:
+    for samp in sorted(samples, key=lambda s: s["metric"]):
         m = samp["metric"]
         if m not in emitted:
             if m in _HELP:
@@ -356,15 +359,19 @@ Run: `chmod +x rootfs/usr/local/bin/unifi-protect-exporter`
 Run: `python3 -m unittest tests.test_unifi_protect_exporter -v`
 Expected: PASS (6 tests OK).
 
-- [ ] **Step 5: Live smoke test against the NVR (optional but recommended)**
+- [ ] **Step 5: Live smoke test against the NVR (REQUIRED — exercises the populated multi-series path)**
 
-Run (replace the key with the real one from your env — do NOT commit it):
+The NVR is reachable now, so this is the one step that produces real multi-series output and proves the metric-family grouping renders correctly. Run (replace the key with the real one from your env — do NOT commit it):
 ```bash
 UNIFI_PROTECT_HOST=192.168.0.159 UNIFI_PROTECT_API_KEY=<key> \
   python3 rootfs/usr/local/bin/unifi-protect-exporter &
-sleep 3 && curl -s 127.0.0.1:9688/metrics | grep -E 'unifi_sensor_(scrape_success|temperature)' ; kill %1
+sleep 3
+curl -s 127.0.0.1:9688/metrics | grep -E 'unifi_sensor_(scrape_success|temperature)'
+echo "temperature series count:"
+curl -s 127.0.0.1:9688/metrics | grep -c '^unifi_sensor_temperature_celsius{'
+kill %1
 ```
-Expected: `unifi_sensor_scrape_success 1` and a `unifi_sensor_temperature_celsius{name="Server Room"} 2X.XXXX` line.
+Expected: `unifi_sensor_scrape_success 1`, a `unifi_sensor_temperature_celsius{name="Server Room"} 2X.XXXX` line, and a temperature series count of **5** (all five UP-Sense units) — each on its own contiguous line under a single `# TYPE` header. A grep still "passes" on malformed output, so the count==5 check is the real assertion that the family-grouping fix works.
 
 - [ ] **Step 6: Create the s6 longrun service**
 
@@ -716,8 +723,11 @@ def _render_metrics():
         "# TYPE acinfinity_scrape_age_seconds gauge",
         f"acinfinity_scrape_age_seconds {age:.3f}",
     ]
+    # Sort by metric name so all samples for a family are contiguous (Prometheus
+    # exposition requires one group per metric). Stable sort preserves per-port
+    # order within a family.
     emitted = set()
-    for samp in samples:
+    for samp in sorted(samples, key=lambda s: s["metric"]):
         m = samp["metric"]
         if m not in emitted:
             if m in _HELP:
@@ -998,7 +1008,13 @@ git commit -m "Document closet environment exporters in README"
 
 - [ ] **Step 6: Deploy**
 
-Use the `deploy` skill (push → CI builds ghcr.io image → ssh + update_container). Remember the production env vars (`UNIFI_PROTECT_HOST`, `UNIFI_PROTECT_API_KEY`, `ACINFINITY_EMAIL`, `ACINFINITY_PASSWORD`) must be set on the Unraid template (template XML on the USB is the source of truth) — the committed template only carries blank placeholders. After deploy, rotate the Protect API key that was shared in chat.
+Use the `deploy` skill (push → CI builds ghcr.io image → ssh + update_container). Remember the production env vars (`UNIFI_PROTECT_HOST`, `UNIFI_PROTECT_API_KEY`, `ACINFINITY_EMAIL`, `ACINFINITY_PASSWORD`) must be set on the Unraid template (template XML on the USB is the source of truth) — the committed template only carries blank placeholders.
+
+After deploy, confirm Prometheus actually ingested the live series (not just that the exporter prints them) — on the Unraid host:
+```bash
+docker exec unraidnotunhealthy sh -c 'wget -qO- "127.0.0.1:9090/api/v1/query?query=count(unifi_sensor_temperature_celsius)"'
+```
+Expected: a result with value `"5"`. Then rotate the Protect API key that was shared in chat.
 
 ---
 
