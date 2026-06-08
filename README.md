@@ -24,6 +24,8 @@ A single Docker image bundles everything, supervised by
 | `nvidia_gpu_exporter`    | NVIDIA GPU utilisation, VRAM, temp, power         |
 | `ipmi_exporter`          | Motherboard sensors, fan RPM, power supply health |
 | `ups-modbus-exporter`    | APC Smart-UPS load, in/out voltage, battery, runtime (Modbus TCP) |
+| `acinfinity-exporter`    | AC Infinity Controller 69 Pro closet temp/humidity/VPD + per-port fan power (AC Infinity cloud API) |
+| `unifi-protect-exporter` | UniFi Protect UP-Sense temp/humidity/light/battery (NVR Integration API) |
 
 All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
 
@@ -64,6 +66,8 @@ pattern as scrutiny and other hardware-monitoring containers).
 | `PUID` / `PGID` | `1000` / `1000` (Unraid template: `99` / `100`) | Remap the in-container `unhealthy` user to a host uid/gid so persistent volumes don't end up root-owned. |
 | `GF_SECURITY_ADMIN_PASSWORD` | unset | Initial Grafana admin password. If unset, Grafana defaults to `admin` and prompts a change on first login. |
 | `UPS_MODBUS_HOST` | `192.168.1.168` | LAN IP of an APC Smart-UPS with Modbus TCP enabled. See **APC UPS (optional)** below. |
+| `ACINFINITY_EMAIL` / `ACINFINITY_PASSWORD` | unset | AC Infinity cloud account credentials. Set both to enable `acinfinity-exporter` (Controller 69 Pro closet climate + per-port fan power); idles if unset. |
+| `UNIFI_PROTECT_HOST` / `UNIFI_PROTECT_API_KEY` | unset | UniFi Protect NVR address + Integration API key. Set both to enable `unifi-protect-exporter` (UP-Sense temp/humidity/light/battery); idles if unset. |
 
 ### APC UPS (optional)
 
