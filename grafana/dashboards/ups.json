@@ -976,7 +976,7 @@
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "celsius",
+          "unit": "fahrenheit",
           "custom": {
             "drawStyle": "line",
             "lineInterpolation": "smooth",
@@ -1001,7 +1001,7 @@
             "type": "prometheus",
             "uid": "unhealthy-prom"
           },
-          "expr": "acinfinity_temperature_celsius",
+          "expr": "acinfinity_temperature_celsius * 9 / 5 + 32",
           "legendFormat": "AC Infinity {{device}}"
         },
         {
@@ -1010,7 +1010,7 @@
             "type": "prometheus",
             "uid": "unhealthy-prom"
           },
-          "expr": "unifi_sensor_temperature_celsius{name=\"Server Room\"}",
+          "expr": "unifi_sensor_temperature_celsius{name=\"Server Room\"} * 9 / 5 + 32",
           "legendFormat": "UP-Sense {{name}}"
         }
       ]
