@@ -92,6 +92,15 @@ scrape_configs:
     static_configs:
       - targets: ['127.0.0.1:9688']
 
+  # AC Infinity Controller 69 Pro (WiFi -> cloud). The acinfinity-exporter
+  # sidecar logs into the AC Infinity cloud API and exposes probe temp /
+  # humidity / VPD and per-port fan power. Reports acinfinity_scrape_success=0
+  # when creds are unset or the controller is offline.
+  - job_name: acinfinity
+    scrape_interval: 60s
+    static_configs:
+      - targets: ['127.0.0.1:9687']
+
   # ---- Active DNS health probes via blackbox_exporter ----
   # Multi-target pattern: each scrape sends target=<resolver> + module=<probe>
   # to blackbox, which runs the probe and returns the result. Resolver IP

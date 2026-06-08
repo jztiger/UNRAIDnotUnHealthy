@@ -44,6 +44,9 @@ services:
       # UniFi Protect UP-Sense exporter — leave the key unset to disable.
       UNIFI_PROTECT_HOST: ${UNIFI_PROTECT_HOST:-}
       UNIFI_PROTECT_API_KEY: ${UNIFI_PROTECT_API_KEY:-}
+      # AC Infinity cloud exporter — leave the password unset to disable.
+      ACINFINITY_EMAIL: ${ACINFINITY_EMAIL:-}
+      ACINFINITY_PASSWORD: ${ACINFINITY_PASSWORD:-}
     volumes:
       - /:/rootfs:ro
       - /proc:/host/proc:ro

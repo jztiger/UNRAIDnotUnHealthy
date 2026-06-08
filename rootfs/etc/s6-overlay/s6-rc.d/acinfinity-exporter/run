@@ -1,0 +1,6 @@
+#!/command/with-contenv bash
+# acinfinity-exporter — poll the AC Infinity cloud API for a WiFi-connected UIS
+# controller and expose climate/fan metrics on 127.0.0.1:9687. Configure
+# ACINFINITY_EMAIL + ACINFINITY_PASSWORD. Idles with acinfinity_scrape_success=0
+# when unset or the controller is offline.
+exec /usr/local/bin/acinfinity-exporter
