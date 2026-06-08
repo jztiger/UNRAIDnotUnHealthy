@@ -83,6 +83,15 @@ scrape_configs:
     static_configs:
       - targets: ['127.0.0.1:9686']
 
+  # UniFi Protect UP-Sense environmental sensors. The unifi-protect-exporter
+  # sidecar polls the NVR's Integration API and exposes temp / humidity / light
+  # / battery per sensor. Reports unifi_sensor_scrape_success=0 when the NVR is
+  # unreachable or the API key is unset, so the closet panels show a gap.
+  - job_name: unifi_protect
+    scrape_interval: 60s
+    static_configs:
+      - targets: ['127.0.0.1:9688']
+
   # ---- Active DNS health probes via blackbox_exporter ----
   # Multi-target pattern: each scrape sends target=<resolver> + module=<probe>
   # to blackbox, which runs the probe and returns the result. Resolver IP
