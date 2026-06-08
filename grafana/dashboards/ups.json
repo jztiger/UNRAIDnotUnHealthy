@@ -1,228 +1,1366 @@
 {
   "title": "UPS / Power",
   "uid": "unhealthy-ups",
-  "tags": ["unraid", "unhealthy", "ups", "power"],
+  "tags": [
+    "unraid",
+    "unhealthy",
+    "ups",
+    "power"
+  ],
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
   "editable": true,
   "refresh": "30s",
-  "time": { "from": "now-6h", "to": "now" },
-  "templating": { "list": [
-    {
-      "name": "rate", "type": "textbox", "label": "Rate ($/kWh)",
-      "query": "0.167", "current": { "text": "0.167", "value": "0.167" },
-      "options": [{ "text": "0.167", "value": "0.167", "selected": true }],
-      "hide": 0
-    },
-    {
-      "name": "ups_nominal_w", "type": "textbox", "label": "UPS nominal W",
-      "query": "600", "current": { "text": "600", "value": "600" },
-      "options": [{ "text": "600", "value": "600", "selected": true }],
-      "hide": 0
-    }
-  ] },
-  "annotations": { "list": [] },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "rate",
+        "type": "textbox",
+        "label": "Rate ($/kWh)",
+        "query": "0.167",
+        "current": {
+          "text": "0.167",
+          "value": "0.167"
+        },
+        "options": [
+          {
+            "text": "0.167",
+            "value": "0.167",
+            "selected": true
+          }
+        ],
+        "hide": 0
+      },
+      {
+        "name": "ups_nominal_w",
+        "type": "textbox",
+        "label": "UPS nominal W",
+        "query": "600",
+        "current": {
+          "text": "600",
+          "value": "600"
+        },
+        "options": [
+          {
+            "text": "600",
+            "value": "600",
+            "selected": true
+          }
+        ],
+        "hide": 0
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
   "panels": [
     {
-      "id": 1, "type": "gauge", "title": "Output Load",
-      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_load_percent", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "decimals": 1,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "green", "value": null },
-          { "color": "yellow", "value": 70 },
-          { "color": "red", "value": 90 }
-        ] } }, "overrides": [] },
-      "options": { "showThresholdLabels": false, "showThresholdMarkers": true }
-    },
-    {
-      "id": 2, "type": "stat", "title": "Output Voltage",
-      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_output_voltage_volts", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "volt", "decimals": 1,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "red", "value": null },
-          { "color": "yellow", "value": 105 },
-          { "color": "green", "value": 110 },
-          { "color": "yellow", "value": 126 },
-          { "color": "red", "value": 130 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "area", "textMode": "value" }
-    },
-    {
-      "id": 3, "type": "stat", "title": "Input Voltage",
-      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_input_voltage_volts", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "volt", "decimals": 1,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "red", "value": null },
-          { "color": "yellow", "value": 105 },
-          { "color": "green", "value": 110 },
-          { "color": "yellow", "value": 126 },
-          { "color": "red", "value": 130 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "area", "textMode": "value" }
-    },
-    {
-      "id": 4, "type": "gauge", "title": "Battery Charge",
-      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_battery_charge_percent", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "decimals": 0,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "red", "value": null },
-          { "color": "yellow", "value": 50 },
-          { "color": "green", "value": 80 }
-        ] } }, "overrides": [] },
-      "options": { "showThresholdLabels": false, "showThresholdMarkers": true }
-    },
-    {
-      "id": 5, "type": "stat", "title": "Runtime Left",
-      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_runtime_seconds", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "s", "decimals": 0,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "red", "value": null },
-          { "color": "yellow", "value": 300 },
-          { "color": "green", "value": 600 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
-    },
-    {
-      "id": 6, "type": "stat", "title": "UPS Link",
-      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_scrape_success", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
-        "mappings": [
-          { "type": "value", "options": { "0": { "text": "NO LINK", "color": "red" }, "1": { "text": "OK", "color": "green" } } }
-        ],
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "red", "value": null },
-          { "color": "green", "value": 1 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value" }
-    },
-    {
-      "id": 7, "type": "timeseries", "title": "Output Load",
-      "gridPos": { "x": 0, "y": 5, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_load_percent", "legendFormat": "load", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
-        "custom": { "drawStyle": "line", "fillOpacity": 15, "lineWidth": 2 } }, "overrides": [] },
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
-    },
-    {
-      "id": 8, "type": "timeseries", "title": "Input / Output Voltage",
-      "gridPos": { "x": 12, "y": 5, "w": 12, "h": 8 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
+      "id": 1,
+      "type": "gauge",
+      "title": "Output Load",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
       "targets": [
-        { "refId": "A", "expr": "apcups_input_voltage_volts", "legendFormat": "input", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } },
-        { "refId": "B", "expr": "apcups_output_voltage_volts", "legendFormat": "output", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }
+        {
+          "refId": "A",
+          "expr": "apcups_load_percent",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
       ],
-      "fieldConfig": { "defaults": { "unit": "volt", "decimals": 1,
-        "custom": { "drawStyle": "line", "fillOpacity": 5, "lineWidth": 2 } }, "overrides": [] },
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
     },
     {
-      "id": 9, "type": "stat", "title": "Output Current",
-      "gridPos": { "x": 0, "y": 13, "w": 6, "h": 4 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_output_current_amps", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "amp", "decimals": 2 }, "overrides": [] },
-      "options": { "colorMode": "none", "graphMode": "area", "textMode": "value" }
+      "id": 2,
+      "type": "stat",
+      "title": "Output Voltage",
+      "gridPos": {
+        "x": 4,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_output_voltage_volts",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 105
+              },
+              {
+                "color": "green",
+                "value": 110
+              },
+              {
+                "color": "yellow",
+                "value": 126
+              },
+              {
+                "color": "red",
+                "value": 130
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      }
     },
     {
-      "id": 10, "type": "stat", "title": "Output Frequency",
-      "gridPos": { "x": 6, "y": 13, "w": 6, "h": 4 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_output_frequency_hertz", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "hertz", "decimals": 2 }, "overrides": [] },
-      "options": { "colorMode": "none", "graphMode": "none", "textMode": "value" }
+      "id": 3,
+      "type": "stat",
+      "title": "Input Voltage",
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_input_voltage_volts",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 105
+              },
+              {
+                "color": "green",
+                "value": 110
+              },
+              {
+                "color": "yellow",
+                "value": 126
+              },
+              {
+                "color": "red",
+                "value": 130
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      }
     },
     {
-      "id": 11, "type": "stat", "title": "Battery Voltage",
-      "gridPos": { "x": 12, "y": 13, "w": 6, "h": 4 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_battery_voltage_volts", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "volt", "decimals": 2 }, "overrides": [] },
-      "options": { "colorMode": "none", "graphMode": "area", "textMode": "value" }
+      "id": 4,
+      "type": "gauge",
+      "title": "Battery Charge",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_battery_charge_percent",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
     },
     {
-      "id": 12, "type": "stat", "title": "Last Poll Age",
-      "gridPos": { "x": 18, "y": 13, "w": 6, "h": 4 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_scrape_age_seconds", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "s", "decimals": 0,
-        "thresholds": { "mode": "absolute", "steps": [
-          { "color": "green", "value": null },
-          { "color": "yellow", "value": 90 },
-          { "color": "red", "value": 300 }
-        ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+      "id": 5,
+      "type": "stat",
+      "title": "Runtime Left",
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_runtime_seconds",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 300
+              },
+              {
+                "color": "green",
+                "value": 600
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
     },
     {
-      "id": 20, "type": "row", "title": "Running Cost  (UPS load × rate)  —  $rate $/kWh @ ${ups_nominal_w}W nominal",
-      "gridPos": { "x": 0, "y": 17, "w": 24, "h": 1 }, "collapsed": false, "panels": []
+      "id": 6,
+      "type": "stat",
+      "title": "UPS Link",
+      "gridPos": {
+        "x": 20,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_scrape_success",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "NO LINK",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "OK",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      }
     },
     {
-      "id": 21, "type": "stat", "title": "Cost / hour (now)",
-      "description": "Current UPS real-power load × your rate. Estimate from load% × nominal W (~±10%).",
-      "gridPos": { "x": 0, "y": 18, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 3 }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "area", "textMode": "value" }
+      "id": 7,
+      "type": "timeseries",
+      "title": "Output Load",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_load_percent",
+          "legendFormat": "load",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
     },
     {
-      "id": 22, "type": "stat", "title": "Projected $/day",
-      "description": "Cost/hour now × 24. Assumes current load holds.",
-      "gridPos": { "x": 4, "y": 18, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate * 24", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 2 }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+      "id": 8,
+      "type": "timeseries",
+      "title": "Input / Output Voltage",
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_input_voltage_volts",
+          "legendFormat": "input",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "apcups_output_voltage_volts",
+          "legendFormat": "output",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "decimals": 1,
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineWidth": 2
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
     },
     {
-      "id": 23, "type": "stat", "title": "Projected $/month",
-      "description": "Cost/hour now × 730 (avg hours/month). Assumes current load holds.",
-      "gridPos": { "x": 8, "y": 18, "w": 4, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate * 730", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 2 }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+      "id": 9,
+      "type": "stat",
+      "title": "Output Current",
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_output_current_amps",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "amp",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "textMode": "value"
+      }
     },
     {
-      "id": 24, "type": "stat", "title": "Cost (selected range)",
+      "id": 10,
+      "type": "stat",
+      "title": "Output Frequency",
+      "gridPos": {
+        "x": 6,
+        "y": 13,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_output_frequency_hertz",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "hertz",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Battery Voltage",
+      "gridPos": {
+        "x": 12,
+        "y": 13,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_battery_voltage_volts",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 12,
+      "type": "stat",
+      "title": "Last Poll Age",
+      "gridPos": {
+        "x": 18,
+        "y": 13,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_scrape_age_seconds",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "red",
+                "value": 300
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "Running Cost  (UPS load \u00d7 rate)  \u2014  $rate $/kWh @ ${ups_nominal_w}W nominal",
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "Cost / hour (now)",
+      "description": "Current UPS real-power load \u00d7 your rate. Estimate from load% \u00d7 nominal W (~\u00b110%).",
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 3
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 22,
+      "type": "stat",
+      "title": "Projected $/day",
+      "description": "Cost/hour now \u00d7 24. Assumes current load holds.",
+      "gridPos": {
+        "x": 4,
+        "y": 18,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate * 24",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "Projected $/month",
+      "description": "Cost/hour now \u00d7 730 (avg hours/month). Assumes current load holds.",
+      "gridPos": {
+        "x": 8,
+        "y": 18,
+        "w": 4,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate * 730",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 24,
+      "type": "stat",
+      "title": "Cost (selected range)",
       "description": "Actual energy cost across the dashboard's time range. Change the time picker (24h / 7d / 30d) to rescope.",
-      "gridPos": { "x": 12, "y": 18, "w": 6, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "avg_over_time(apcups_load_percent[$__range]) / 100 * $ups_nominal_w / 1000 * ($__range_s / 3600) * $rate", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 2 }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "none", "textMode": "value" }
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg_over_time(apcups_load_percent[$__range]) / 100 * $ups_nominal_w / 1000 * ($__range_s / 3600) * $rate",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value"
+      }
     },
     {
-      "id": 25, "type": "stat", "title": "Energy (selected range)",
+      "id": 25,
+      "type": "stat",
+      "title": "Energy (selected range)",
       "description": "Energy used by the UPS load across the dashboard's time range.",
-      "gridPos": { "x": 18, "y": 18, "w": 6, "h": 5 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "avg_over_time(apcups_load_percent[$__range]) / 100 * $ups_nominal_w / 1000 * ($__range_s / 3600)", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "kwatth", "decimals": 2 }, "overrides": [] },
-      "options": { "colorMode": "none", "graphMode": "none", "textMode": "value" }
+      "gridPos": {
+        "x": 18,
+        "y": 18,
+        "w": 6,
+        "h": 5
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg_over_time(apcups_load_percent[$__range]) / 100 * $ups_nominal_w / 1000 * ($__range_s / 3600)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kwatth",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "value"
+      }
     },
     {
-      "id": 26, "type": "timeseries", "title": "Cost / hour over time",
-      "gridPos": { "x": 0, "y": 23, "w": 24, "h": 7 },
-      "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate", "legendFormat": "$/hr", "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
-      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 3,
-        "custom": { "drawStyle": "line", "fillOpacity": 15, "lineWidth": 2 } }, "overrides": [] },
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
+      "id": 26,
+      "type": "timeseries",
+      "title": "Cost / hour over time",
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 24,
+        "h": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcups_load_percent / 100 * $ups_nominal_w / 1000 * $rate",
+          "legendFormat": "$/hr",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 3,
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 27,
+      "type": "row",
+      "title": "Closet Environment",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "panels": []
+    },
+    {
+      "id": 28,
+      "type": "timeseries",
+      "title": "Temperature",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "acinfinity_temperature_celsius",
+          "legendFormat": "AC Infinity {{device}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "unifi_sensor_temperature_celsius{name=\"Server Room\"}",
+          "legendFormat": "UP-Sense {{name}}"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "type": "timeseries",
+      "title": "Humidity",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "acinfinity_humidity_percent",
+          "legendFormat": "AC Infinity {{device}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "unifi_sensor_humidity_percent{name=\"Server Room\"}",
+          "legendFormat": "UP-Sense {{name}}"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "VPD",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "pressurekpa",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "acinfinity_vpd_kpa",
+          "legendFormat": "{{device}}"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Fan Power (per port)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "acinfinity_fan_power",
+          "legendFormat": "{{device}} p{{port}} {{port_name}}"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "type": "stat",
+      "title": "UP-Sense Battery",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 16,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "unifi_sensor_battery_percent{name=\"Server Room\"}",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "type": "stat",
+      "title": "UP-Sense Signal",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 20,
+        "y": 40
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dBm",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "unifi_sensor_signal_dbm{name=\"Server Room\"}",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "type": "stat",
+      "title": "AC Infinity Link",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bool_on_off",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "acinfinity_scrape_success",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "type": "stat",
+      "title": "UP-Sense Link",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "unhealthy-prom"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 48
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bool_on_off",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "unifi_sensor_scrape_success",
+          "legendFormat": ""
+        }
+      ]
     }
   ]
 }
