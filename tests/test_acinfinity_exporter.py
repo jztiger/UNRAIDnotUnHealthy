@@ -1,4 +1,5 @@
 import importlib.util
+import os
 import pathlib
 import unittest
 from importlib.machinery import SourceFileLoader
@@ -68,6 +69,21 @@ class DecodeDevices(unittest.TestCase):
     def test_empty_payload_is_empty(self):
         self.assertEqual(self.mod.decode_devices([]), [])
         self.assertEqual(self.mod.decode_devices(None), [])
+
+
+class ToCelsius(unittest.TestCase):
+    def test_fahrenheit_branch_converts_to_celsius(self):
+        old = os.environ.get("ACINFINITY_TEMP_UNIT")
+        os.environ["ACINFINITY_TEMP_UNIT"] = "f"
+        try:
+            mod = load_module()  # fresh module reads the env at load
+            # raw 8042 = 80.42 F -> 26.9 C
+            self.assertAlmostEqual(mod._to_celsius(8042), (80.42 - 32) * 5 / 9, places=4)
+        finally:
+            if old is None:
+                os.environ.pop("ACINFINITY_TEMP_UNIT", None)
+            else:
+                os.environ["ACINFINITY_TEMP_UNIT"] = old
 
 
 if __name__ == "__main__":

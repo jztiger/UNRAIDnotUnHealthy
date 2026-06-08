@@ -96,7 +96,8 @@ def decode_devices(data):
     for dev in data or []:
         dname = dev.get("devName") or str(dev.get("devId", "unknown"))
         info = dev.get("deviceInfo") or {}
-        dlabels = {"device": dname}
+        dev_id = str(dev.get("devId", ""))
+        dlabels = {"device": dname, "id": dev_id}
         if info.get("temperature") is not None:
             samples.append({"metric": "acinfinity_temperature_celsius", "labels": dlabels, "value": _to_celsius(info["temperature"])})
         if info.get("humidity") is not None:
@@ -104,7 +105,7 @@ def decode_devices(data):
         if info.get("vpdnums") is not None:
             samples.append({"metric": "acinfinity_vpd_kpa", "labels": dlabels, "value": info["vpdnums"] / 100.0})
         for p in info.get("ports") or []:
-            plabels = {"device": dname, "port": str(p.get("port", "")), "port_name": p.get("portName", "")}
+            plabels = {"device": dname, "id": dev_id, "port": str(p.get("port", "")), "port_name": p.get("portName", "")}
             if p.get("speak") is not None:
                 samples.append({"metric": "acinfinity_fan_power", "labels": plabels, "value": float(p["speak"])})
             if p.get("online") is not None:
