@@ -52,3 +52,22 @@ def test_writes_self_scrape_password_file(tmp_path):
     }
     subprocess.run(["bash", str(SCRIPT)], env=env, check=True)
     assert pw.read_text() == "s3cret"
+
+
+def test_generated_config_passes_promtool(tmp_path):
+    """The generated web-config must be semantically valid, not just YAML."""
+    import shutil
+    promtool = shutil.which("promtool")
+    if promtool is None:
+        import pytest
+        pytest.skip("promtool not installed")
+    bcrypt = "$2b$10$abcdefghijklmnopqrstuv0123456789012345678901234567890ab"
+    out = _run(tmp_path, {
+        "PROMETHEUS_REMOTE_WRITE_USER": "closet-pi",
+        "PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT": bcrypt,
+    })
+    cfg = tmp_path / "web-config.yml"
+    cfg.write_text(out)
+    r = subprocess.run([promtool, "check", "web-config", str(cfg)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr

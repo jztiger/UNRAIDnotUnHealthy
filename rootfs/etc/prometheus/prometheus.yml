@@ -6,6 +6,9 @@ global:
 
 scrape_configs:
   - job_name: prometheus
+    # username is fixed at closet-pi to match the generated web-config
+    # (rootfs/etc/cont-init.d/03-prometheus-web-config); Prometheus basic_auth
+    # has no username_file, so this cannot be env-driven.
     basic_auth:
       username: closet-pi
       password_file: /run/prometheus/self_scrape_password
