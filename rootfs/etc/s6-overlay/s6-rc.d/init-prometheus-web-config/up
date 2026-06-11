@@ -1,0 +1,1 @@
+/command/with-contenv /etc/cont-init.d/03-prometheus-web-config
