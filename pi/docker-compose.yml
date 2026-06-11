@@ -1,0 +1,31 @@
+# Raspberry Pi (192.168.0.95) closet collector. Runs the UP-Sense exporter
+# (reaches the NVR at 192.168.0.159, which the Unraid container cannot) and a
+# vmagent that remote_writes to the container's Prometheus at 192.168.1.100.
+# Deploy: git pull && docker compose -f pi/docker-compose.yml up -d --build
+services:
+  unifi-protect-exporter:
+    build:
+      context: ..                       # repo root, to COPY the shared script
+      dockerfile: pi/Dockerfile.exporter
+    image: closet-unifi-protect-exporter:local
+    container_name: unifi-protect-exporter
+    restart: unless-stopped
+    environment:
+      UNIFI_PROTECT_HOST: ${UNIFI_PROTECT_HOST:-192.168.0.159}
+      UNIFI_PROTECT_API_KEY: ${UNIFI_PROTECT_API_KEY:-}
+      UNIFI_PROTECT_EXPORTER_ADDR: 0.0.0.0
+    # No ports: published — only the sibling vmagent needs it.
+
+  vmagent:
+    image: victoriametrics/vmagent:v1.115.0   # multi-arch (arm64/armhf)
+    container_name: closet-vmagent
+    restart: unless-stopped
+    depends_on:
+      - unifi-protect-exporter
+    command:
+      - -promscrape.config=/etc/vmagent/scrape.yml
+      - -remoteWrite.url=http://192.168.1.100:9090/api/v1/write
+      - -remoteWrite.basicAuth.username=${REMOTE_WRITE_USER:-}
+      - -remoteWrite.basicAuth.password=${REMOTE_WRITE_PASSWORD:-}
+    volumes:
+      - ./vmagent-scrape.yml:/etc/vmagent/scrape.yml:ro

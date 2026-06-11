@@ -1,0 +1,13 @@
+# Builds the UP-Sense exporter image for the Raspberry Pi collector.
+# Build context is the REPO ROOT so we reuse the single source-of-truth script
+# at rootfs/usr/local/bin/unifi-protect-exporter (no fork). Stdlib-only, so the
+# slim base needs no extra packages. Multi-arch base — resolves to arm64/armhf
+# automatically on the Pi.
+FROM python:3-slim
+COPY rootfs/usr/local/bin/unifi-protect-exporter /usr/local/bin/unifi-protect-exporter
+RUN chmod 0755 /usr/local/bin/unifi-protect-exporter
+# Bind all interfaces inside the container so the sibling vmagent container can
+# reach it by compose service name. Not published to the Pi host.
+ENV UNIFI_PROTECT_EXPORTER_ADDR=0.0.0.0
+EXPOSE 9688
+ENTRYPOINT ["/usr/local/bin/unifi-protect-exporter"]
