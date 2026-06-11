@@ -8,8 +8,16 @@ datasources:
     url: http://127.0.0.1:9090
     isDefault: true
     editable: false
+    # Basic auth for the now-authenticated Prometheus. Blank-safe: when
+    # PROM_BASIC_AUTH_PASSWORD is unset, Grafana sends an empty password which a
+    # no-auth Prometheus ignores. Username is fixed at closet-pi to match the
+    # Prometheus web-config / self-scrape job.
+    basicAuth: true
+    basicAuthUser: closet-pi
     jsonData:
       timeInterval: 15s
+    secureJsonData:
+      basicAuthPassword: $__env{PROM_BASIC_AUTH_PASSWORD}
 
   - name: Loki
     uid: unhealthy-loki

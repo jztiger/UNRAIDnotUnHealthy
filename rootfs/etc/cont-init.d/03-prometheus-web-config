@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Generate Prometheus' web-config (basic auth) before it starts. Auth is
+# OPT-IN: only when PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT is set do we emit a
+# basic_auth_users block; otherwise we write an empty (no-auth) config so
+# deployments without the env var are unaffected.
+#
+# The bcrypt hash ($2b$...) is written with printf %s so the `$` characters are
+# inserted literally — never run it through shell/`${}` expansion or a YAML
+# templater that would mangle them.
+set -eu
+
+OUT="${PROM_WEB_CONFIG_PATH:-/run/prometheus/web-config.yml}"
+# Username is FIXED at closet-pi: Prometheus basic_auth has no username_file, so
+# the self-scrape job in prometheus.yml hardcodes this same value. They must
+# match, so this is intentionally not configurable — only the password is.
+USER="closet-pi"
+HASH="${PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT:-}"
+
+# Files are written root-owned, mode 0644 (world-readable), so the unhealthy
+# user that runs Prometheus can read them without this oneshot depending on
+# init-puid-pgid. If these are ever tightened to 0640/0600 owned by unhealthy,
+# add init-puid-pgid to this service's dependencies.d.
+install -d -m 0755 "$(dirname "$OUT")"
+
+if [ -n "$HASH" ]; then
+  {
+    printf 'basic_auth_users:\n'
+    printf '  %s: ' "$USER"
+    printf '%s\n' "$HASH"
+  } > "$OUT"
+else
+  printf '{}\n' > "$OUT"
+fi
+chmod 0644 "$OUT"
+
+# Also drop a password file the self-scrape job reads (kept in sync with the
+# web-config). Empty password => Prometheus sends blank creds, which a no-auth
+# server ignores, so this is blank-safe when auth is off. 0644 so Prometheus
+# (runs as the unhealthy user, not root) can read it; the file lives in the
+# container's tmpfs /run, never on a shared mount.
+PWFILE="${PROM_SELF_SCRAPE_PW_FILE:-$(dirname "$OUT")/self_scrape_password}"
+# Invariant: PROM_BASIC_AUTH_PASSWORD must be the plaintext pre-image of
+# PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT. If auth is on but the plaintext is
+# missing, the self-scrape (prometheus job) will 401 silently — warn loudly.
+if [ -n "$HASH" ] && [ -z "${PROM_BASIC_AUTH_PASSWORD:-}" ]; then
+  echo "03-prometheus-web-config: WARNING: auth enabled (bcrypt set) but PROM_BASIC_AUTH_PASSWORD is empty; the prometheus self-scrape will 401." >&2
+fi
+printf '%s' "${PROM_BASIC_AUTH_PASSWORD:-}" > "$PWFILE"
+chmod 0644 "$PWFILE"

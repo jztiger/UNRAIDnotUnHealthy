@@ -1,0 +1,12 @@
+# vmagent scrapes the local exporter and remote_writes to the container's
+# Prometheus (configured via -remoteWrite.* flags in docker-compose.yml).
+# job_name becomes the `job` label so the series look like a normal scrape in
+# Grafana; instance marks them as Pi-sourced.
+global:
+  scrape_interval: 60s
+scrape_configs:
+  - job_name: unifi_protect
+    static_configs:
+      - targets: ['unifi-protect-exporter:9688']
+        labels:
+          instance: closet-pi

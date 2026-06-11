@@ -6,6 +6,12 @@ global:
 
 scrape_configs:
   - job_name: prometheus
+    # username is fixed at closet-pi to match the generated web-config
+    # (rootfs/etc/cont-init.d/03-prometheus-web-config); Prometheus basic_auth
+    # has no username_file, so this cannot be env-driven.
+    basic_auth:
+      username: closet-pi
+      password_file: /run/prometheus/self_scrape_password
     static_configs:
       - targets: ['127.0.0.1:9090']
 
@@ -82,15 +88,6 @@ scrape_configs:
     scrape_interval: 30s
     static_configs:
       - targets: ['127.0.0.1:9686']
-
-  # UniFi Protect UP-Sense environmental sensors. The unifi-protect-exporter
-  # sidecar polls the NVR's Integration API and exposes temp / humidity / light
-  # / battery per sensor. Reports unifi_sensor_scrape_success=0 when the NVR is
-  # unreachable or the API key is unset, so the closet panels show a gap.
-  - job_name: unifi_protect
-    scrape_interval: 60s
-    static_configs:
-      - targets: ['127.0.0.1:9688']
 
   # AC Infinity Controller 69 Pro (WiFi -> cloud). The acinfinity-exporter
   # sidecar logs into the AC Infinity cloud API and exposes probe temp /
