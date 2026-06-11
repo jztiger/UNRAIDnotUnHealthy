@@ -12,10 +12,13 @@ metrics to the container's Prometheus.
    - `UNIFI_PROTECT_API_KEY` — a **freshly rotated** Protect Integration API key
      (Protect → Settings → Control Plane → Integrations). Do not reuse the key
      pasted in chat history; it is compromised.
-   - `REMOTE_WRITE_USER` is fixed at `closet-pi` (matches the container's
-     Prometheus web-config; not configurable). `REMOTE_WRITE_PASSWORD` must be
-     the plaintext behind the container's `PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT`
-     (i.e. equal to the container's `PROM_BASIC_AUTH_PASSWORD`).
+   - `UNIFI_PROTECT_HOST` defaults to `192.168.0.159` (the NVR) — only change it
+     if your NVR has a different address.
+   - `REMOTE_WRITE_USER` defaults to `closet-pi`. Leave it as-is: the container's
+     Prometheus web-config hardcodes that username, so changing it here would
+     break auth. `REMOTE_WRITE_PASSWORD` must be the plaintext behind the
+     container's `PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT` (i.e. equal to the
+     container's `PROM_BASIC_AUTH_PASSWORD`).
 3. From the repo root: `cd pi && docker compose up -d --build`
    (cd into `pi/` so Compose loads `pi/.env` on every Compose version; the build
    context `..` still resolves to the repo root.)
