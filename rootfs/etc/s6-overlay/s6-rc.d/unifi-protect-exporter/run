@@ -1,6 +1,0 @@
-#!/command/with-contenv bash
-# unifi-protect-exporter — poll the UniFi Protect Integration API for UP-Sense
-# environmental sensors and expose them on 127.0.0.1:9688. Configure the NVR via
-# UNIFI_PROTECT_HOST + UNIFI_PROTECT_API_KEY. Read-only; idles with
-# unifi_sensor_scrape_success=0 when unset or unreachable.
-exec /usr/local/bin/unifi-protect-exporter

@@ -41,9 +41,9 @@ services:
       SONARR_API_KEY: ${SONARR_API_KEY:-}
       RADARR_URL: ${RADARR_URL:-http://192.168.1.6:7878}
       RADARR_API_KEY: ${RADARR_API_KEY:-}
-      # UniFi Protect UP-Sense exporter — leave the key unset to disable.
-      UNIFI_PROTECT_HOST: ${UNIFI_PROTECT_HOST:-}
-      UNIFI_PROTECT_API_KEY: ${UNIFI_PROTECT_API_KEY:-}
+      # Prometheus remote-write basic auth — closet Pi pushes UP-Sense metrics.
+      PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT: ${PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT:-}
+      PROM_BASIC_AUTH_PASSWORD: ${PROM_BASIC_AUTH_PASSWORD:-}
       # AC Infinity cloud exporter — leave the password unset to disable.
       ACINFINITY_EMAIL: ${ACINFINITY_EMAIL:-}
       ACINFINITY_PASSWORD: ${ACINFINITY_PASSWORD:-}
