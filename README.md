@@ -25,9 +25,11 @@ A single Docker image bundles everything, supervised by
 | `ipmi_exporter`          | Motherboard sensors, fan RPM, power supply health |
 | `ups-modbus-exporter`    | APC Smart-UPS load, in/out voltage, battery, runtime (Modbus TCP) |
 | `acinfinity-exporter`    | AC Infinity Controller 69 Pro closet temp/humidity/VPD + per-port fan power (AC Infinity cloud API) |
-| `unifi-protect-exporter` | UniFi Protect UP-Sense temp/humidity/light/battery (NVR Integration API) |
 
-All exporters bind to `127.0.0.1`. Only Grafana (port `3000`) is exposed.
+All exporters bind to `127.0.0.1`. Grafana (port `3000`) is exposed; Prometheus
+(port `9090`) is also reachable when remote-write auth is configured, so the
+Raspberry Pi closet collector can push UP-Sense metrics (see **Closet collector
+(Raspberry Pi)** below).
 
 ## Quick start (Unraid)
 
@@ -67,7 +69,18 @@ pattern as scrutiny and other hardware-monitoring containers).
 | `GF_SECURITY_ADMIN_PASSWORD` | unset | Initial Grafana admin password. If unset, Grafana defaults to `admin` and prompts a change on first login. |
 | `UPS_MODBUS_HOST` | `192.168.1.168` | LAN IP of an APC Smart-UPS with Modbus TCP enabled. See **APC UPS (optional)** below. |
 | `ACINFINITY_EMAIL` / `ACINFINITY_PASSWORD` | unset | AC Infinity cloud account credentials. Set both to enable `acinfinity-exporter` (Controller 69 Pro closet climate + per-port fan power); idles if unset. |
-| `UNIFI_PROTECT_HOST` / `UNIFI_PROTECT_API_KEY` | unset | UniFi Protect NVR address + Integration API key. Set both to enable `unifi-protect-exporter` (UP-Sense temp/humidity/light/battery); idles if unset. |
+| `PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT` / `PROM_BASIC_AUTH_PASSWORD` | unset | Enable HTTP basic auth on Prometheus so the Raspberry Pi closet collector can `remote_write` UP-Sense metrics. The first is a bcrypt hash (`htpasswd -nBC 10 closet-pi`), the second its plaintext (Grafana sends it). Leave blank to keep Prometheus open (no auth). See **Closet collector (Raspberry Pi)** below. |
+
+### Closet collector (Raspberry Pi)
+
+The closet UP-Sense sensor reports to a UniFi Protect NVR on a LAN segment the
+Unraid container can't reach. A small collector runs on a Raspberry Pi on that
+segment instead: it runs the same `unifi-protect-exporter` plus a `vmagent` that
+`remote_write`s the metrics back to this container's Prometheus over HTTP basic
+auth. Set `PROMETHEUS_REMOTE_WRITE_PASSWORD_BCRYPT` + `PROM_BASIC_AUTH_PASSWORD`
+here, and deploy the Pi side per [`pi/README.md`](pi/README.md). AC Infinity
+climate stays in-container (it uses an outbound cloud API). Leave the auth vars
+blank to skip — Prometheus stays open and the closet panels simply show a gap.
 
 ### APC UPS (optional)
 
