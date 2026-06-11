@@ -1,7 +1,9 @@
 # Raspberry Pi (192.168.0.95) closet collector. Runs the UP-Sense exporter
 # (reaches the NVR at 192.168.0.159, which the Unraid container cannot) and a
 # vmagent that remote_writes to the container's Prometheus at 192.168.1.100.
-# Deploy: git pull && docker compose -f pi/docker-compose.yml up -d --build
+# Deploy (run from the repo root): git pull && cd pi && docker compose up -d --build
+# (cd into pi/ so docker compose loads pi/.env on every Compose version; the
+# build context "..") still resolves to the repo root.)
 services:
   unifi-protect-exporter:
     build:
