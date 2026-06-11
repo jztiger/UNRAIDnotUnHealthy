@@ -27,7 +27,7 @@ services:
     command:
       - -promscrape.config=/etc/vmagent/scrape.yml
       - -remoteWrite.url=http://192.168.1.100:9090/api/v1/write
-      - -remoteWrite.basicAuth.username=${REMOTE_WRITE_USER:-}
+      - -remoteWrite.basicAuth.username=${REMOTE_WRITE_USER:-closet-pi}
       - -remoteWrite.basicAuth.password=${REMOTE_WRITE_PASSWORD:-}
     volumes:
       - ./vmagent-scrape.yml:/etc/vmagent/scrape.yml:ro
