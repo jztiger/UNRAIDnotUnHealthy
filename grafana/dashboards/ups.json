@@ -983,7 +983,34 @@
             "fillOpacity": 10
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trend \\(1h avg\\).*"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1012,6 +1039,24 @@
           },
           "expr": "unifi_sensor_temperature_celsius{name=\"Server Room\"} * 9 / 5 + 32",
           "legendFormat": "UP-Sense {{name}}"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "avg_over_time(acinfinity_temperature_celsius[1h]) * 9 / 5 + 32",
+          "legendFormat": "AC Infinity trend (1h avg)"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "avg_over_time(unifi_sensor_temperature_celsius{name=\"Server Room\"}[1h]) * 9 / 5 + 32",
+          "legendFormat": "UP-Sense trend (1h avg)"
         }
       ]
     },
@@ -1038,7 +1083,34 @@
             "fillOpacity": 10
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*trend \\(1h avg\\).*"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1067,6 +1139,24 @@
           },
           "expr": "unifi_sensor_humidity_percent{name=\"Server Room\"}",
           "legendFormat": "UP-Sense {{name}}"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "avg_over_time(acinfinity_humidity_percent[1h])",
+          "legendFormat": "AC Infinity trend (1h avg)"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "unhealthy-prom"
+          },
+          "expr": "avg_over_time(unifi_sensor_humidity_percent{name=\"Server Room\"}[1h])",
+          "legendFormat": "UP-Sense trend (1h avg)"
         }
       ]
     },
