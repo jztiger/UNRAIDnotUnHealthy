@@ -1447,7 +1447,7 @@
             "type": "prometheus",
             "uid": "unhealthy-prom"
           },
-          "expr": "unifi_sensor_scrape_success",
+          "expr": "max(unifi_sensor_scrape_success{job=\"unifi_protect\"})",
           "legendFormat": ""
         }
       ]
