@@ -56,6 +56,12 @@ scrape_configs:
 
   - job_name: sonarr
     scrape_interval: 60s
+    # exportarr --enable-additional-metrics fans out one episode/episodefile API
+    # call per series, so a full collection over a large Sonarr library takes
+    # ~20s+ (Radarr has no per-episode fan-out, so it stays fast on the default).
+    # Without this the scrape hit the 10s default and always errored
+    # "context deadline exceeded". Keep timeout < interval.
+    scrape_timeout: 45s
     static_configs:
       - targets: ['127.0.0.1:9707']
 

@@ -252,7 +252,7 @@
       "id": 52, "type": "timeseries", "title": "Radarr Queue Depth Over Time",
       "gridPos": { "x": 16, "y": 26, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "unhealthy-prom" },
-      "targets": [{ "refId": "A", "expr": "sum(radarr_queue_total)", "legendFormat": "queue",
+      "targets": [{ "refId": "A", "expr": "sum(radarr_queue_total) or vector(0)", "legendFormat": "queue",
         "datasource": { "type": "prometheus", "uid": "unhealthy-prom" } }],
       "fieldConfig": { "defaults": { "unit": "short", "decimals": 0,
         "custom": { "drawStyle": "line", "fillOpacity": 25 } }, "overrides": [] },
